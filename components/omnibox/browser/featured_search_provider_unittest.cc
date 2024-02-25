@@ -211,3 +211,44 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
 
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
+
+TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kStarterPackExpansion);
+
+  const GURL kBookmarksUrl =
+      GURL(TemplateURLStarterPackData::bookmarks.destination_url);
+  const GURL kHistoryUrl =
+      GURL(TemplateURLStarterPackData::history.destination_url);
+  const GURL kTabsUrl = GURL(TemplateURLStarterPackData::tabs.destination_url);
+  const GURL kAskGoogleUrl =
+      GURL(TemplateURLStarterPackData::AskGoogle.destination_url);
+
+  // Populate template URL with starter pack entries
+  std::vector<std::unique_ptr<TemplateURLData>> turls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
+  for (auto& turl : turls) {
+    client_->GetTemplateURLService()->Add(
+        std::make_unique<TemplateURL>(std::move(*turl)));
+  }
+
+  AutocompleteInput input(u"@", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_prevent_inline_autocomplete(true);
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->done());
+  ACMatches matches = provider_->matches();
+  ASSERT_EQ(turls.size(), matches.size());
+
+  // Sort the matches according to relevances (in descending order), and make
+  // sure that the matches are in the expected order.
+  std::sort(matches.begin(), matches.end(), [](const auto& x, const auto& y) {
+    return x.relevance > y.relevance;
+  });
+
+  GURL expected_match_order[] = {kAskGoogleUrl, kBookmarksUrl, kHistoryUrl,
+                                 kTabsUrl};
+  for (size_t i = 0; i < matches.size(); i++) {
+    EXPECT_EQ(matches[i].destination_url, expected_match_order[i]);
+  }
+}
