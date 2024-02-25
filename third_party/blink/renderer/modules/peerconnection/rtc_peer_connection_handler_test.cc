@@ -934,7 +934,9 @@ TEST_F(RTCPeerConnectionHandlerTest, OnIceCandidate) {
   EXPECT_EQ(kDummySdp, mock_client_->candidate_sdp());
 }
 
-TEST_F(RTCPeerConnectionHandlerTest, OnRenegotiationNeeded) {
+// TODO(https://crbug.com/326753408): Reenable and fix after
+// https://webrtc-review.googlesource.com/c/src/+/340481 has been imported.
+TEST_F(RTCPeerConnectionHandlerTest, DISABLED_OnRenegotiationNeeded) {
   testing::InSequence sequence;
   EXPECT_CALL(*mock_tracker_.Get(),
               TrackOnRenegotiationNeeded(pc_handler_.get()));
