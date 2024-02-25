@@ -62,7 +62,6 @@ using blink::WebString;
 using blink::WebVector;
 
 namespace autofill::form_util {
-
 namespace {
 
 struct AutofillFieldCase {
@@ -92,151 +91,147 @@ struct WebElementDescriptor {
 };
 
 const char kFormHtml[] =
-    "<FORM name='TestForm' action='http://abc.com' method='post'>"
-    "  <INPUT type='text' id='firstname'/>"
-    "  <INPUT type='text' id='lastname'/>"
-    "  <INPUT type='hidden' id='imhidden'/>"
-    "  <INPUT type='text' id='notempty' value='Hi'/>"
-    "  <INPUT type='text' autocomplete='off' id='noautocomplete'/>"
-    "  <INPUT type='text' disabled='disabled' id='notenabled'/>"
-    "  <INPUT type='text' readonly id='readonly'/>"
-    "  <INPUT type='text' style='visibility: hidden'"
-    "         id='invisible'/>"
-    "  <INPUT type='text' style='display: none' id='displaynone'/>"
-    "  <INPUT type='month' id='month'/>"
-    "  <INPUT type='month' id='month-nonempty' value='2011-12'/>"
-    "  <SELECT id='select'>"
-    "    <OPTION></OPTION>"
-    "    <OPTION value='CA'>California</OPTION>"
-    "    <OPTION value='TX'>Texas</OPTION>"
-    "  </SELECT>"
-    "  <SELECT id='select-nonempty'>"
-    "    <OPTION value='CA' selected>California</OPTION>"
-    "    <OPTION value='TX'>Texas</OPTION>"
-    "  </SELECT>"
-    "  <SELECT id='select-unchanged'>"
-    "    <OPTION value='CA' selected>California</OPTION>"
-    "    <OPTION value='TX'>Texas</OPTION>"
-    "  </SELECT>"
-    "  <SELECT id='select-displaynone' style='display:none'>"
-    "    <OPTION value='CA' selected>California</OPTION>"
-    "    <OPTION value='TX'>Texas</OPTION>"
-    "  </SELECT>"
-    "  <TEXTAREA id='textarea'></TEXTAREA>"
-    "  <TEXTAREA id='textarea-nonempty'>Go&#10;away!</TEXTAREA>"
-    "  <INPUT type='submit' name='reply-send' value='Send'/>"
-    "</FORM>";
+    R"(<form name=TestForm action='http://abc.com'>
+         <input id=firstname>
+         <input id=lastname>
+         <input type=hidden id=imhidden>
+         <input id=notempty value=Hi>
+         <input autocomplete=off id=noautocomplete>
+         <input disabled=disabled id=notenabled>
+         <input readonly id=readonly>
+         <input style='visibility: hidden' id=invisible>
+         <input style='display: none' id=displaynone>
+         <input type=month id=month>
+         <input type=month id='month-nonempty' value='2011-12'>
+         <select id=select>
+           <option></option>
+           <option value=CA>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-nonempty'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-unchanged'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-displaynone' style='display:none'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <textarea id=textarea></textarea>
+         <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+         <input type=submit name='reply-send' value=Send>
+       </form>)";
 
 // This constant uses a mixed-case title tag to be sure that the title match is
 // not case-sensitive. Other tests in this file use an all-lower title tag.
 const char kUnownedFormHtml[] =
-    "<HEAD><TITLE>Enter Shipping Info</TITLE></HEAD>"
-    "<INPUT type='text' id='firstname'/>"
-    "<INPUT type='text' id='lastname'/>"
-    "<INPUT type='hidden' id='imhidden'/>"
-    "<INPUT type='text' id='notempty' value='Hi'/>"
-    "<INPUT type='text' autocomplete='off' id='noautocomplete'/>"
-    "<INPUT type='text' disabled='disabled' id='notenabled'/>"
-    "<INPUT type='text' readonly id='readonly'/>"
-    "<INPUT type='text' style='visibility: hidden'"
-    "       id='invisible'/>"
-    "<INPUT type='text' style='display: none' id='displaynone'/>"
-    "<INPUT type='month' id='month'/>"
-    "<INPUT type='month' id='month-nonempty' value='2011-12'/>"
-    "<SELECT id='select'>"
-    "  <OPTION></OPTION>"
-    "  <OPTION value='CA'>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-nonempty'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-unchanged'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-displaynone' style='display:none'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<TEXTAREA id='textarea'></TEXTAREA>"
-    "<TEXTAREA id='textarea-nonempty'>Go&#10;away!</TEXTAREA>"
-    "<INPUT type='submit' name='reply-send' value='Send'/>";
+    R"(<head><title>Enter Shipping Info</title></head>
+       <input id=firstname>
+       <input id=lastname>
+       <input type=hidden id=imhidden>
+       <input id=notempty value=Hi>
+       <input autocomplete=off id=noautocomplete>
+       <input disabled=disabled id=notenabled>
+       <input readonly id=readonly>
+       <input style='visibility: hidden' id=invisible>
+       <input style='display: none' id=displaynone>
+       <input type=month id=month>
+       <input type=month id='month-nonempty' value='2011-12'>
+       <select id=select>
+         <option></option>
+         <option value=CA>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-nonempty'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-unchanged'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-displaynone' style='display:none'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <textarea id=textarea></textarea>
+       <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+       <input type=submit name='reply-send' value=Send>)";
 
 // This constant has no title tag, and should be passed to
 // LoadHTMLWithURLOverride to test the detection of unowned forms by URL.
 const char kUnownedUntitledFormHtml[] =
-    "<INPUT type='text' id='firstname'/>"
-    "<INPUT type='text' id='lastname'/>"
-    "<INPUT type='hidden' id='imhidden'/>"
-    "<INPUT type='text' id='notempty' value='Hi'/>"
-    "<INPUT type='text' autocomplete='off' id='noautocomplete'/>"
-    "<INPUT type='text' disabled='disabled' id='notenabled'/>"
-    "<INPUT type='text' readonly id='readonly'/>"
-    "<INPUT type='text' style='visibility: hidden'"
-    "       id='invisible'/>"
-    "<INPUT type='text' style='display: none' id='displaynone'/>"
-    "<INPUT type='month' id='month'/>"
-    "<INPUT type='month' id='month-nonempty' value='2011-12'/>"
-    "<SELECT id='select'>"
-    "  <OPTION></OPTION>"
-    "  <OPTION value='CA'>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-nonempty'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-unchanged'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-displaynone' style='display:none'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<TEXTAREA id='textarea'></TEXTAREA>"
-    "<TEXTAREA id='textarea-nonempty'>Go&#10;away!</TEXTAREA>"
-    "<INPUT type='submit' name='reply-send' value='Send'/>";
+    R"(<input id=firstname>
+       <input id=lastname>
+       <input type=hidden id=imhidden>
+       <input id=notempty value=Hi>
+       <input autocomplete=off id=noautocomplete>
+       <input disabled=disabled id=notenabled>
+       <input readonly id=readonly>
+       <input style='visibility: hidden' id=invisible>
+       <input style='display: none' id=displaynone>
+       <input type=month id=month>
+       <input type=month id='month-nonempty' value='2011-12'>
+       <select id=select>
+         <option></option>
+         <option value=CA>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-nonempty'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-unchanged'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <select id='select-displaynone' style='display:none'>
+         <option value=CA selected>California</option>
+         <option value=TX>Texas</option>
+       </select>
+       <textarea id=textarea></textarea>
+       <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+       <input type=submit name='reply-send' value=Send>)";
 
 // This constant does not have a title tag, but should match an unowned form
 // anyway because it is not English.
 const char kUnownedNonEnglishFormHtml[] =
-    "<HTML LANG='fr'>"
-    "<INPUT type='text' id='firstname'/>"
-    "<INPUT type='text' id='lastname'/>"
-    "<INPUT type='hidden' id='imhidden'/>"
-    "<INPUT type='text' id='notempty' value='Hi'/>"
-    "<INPUT type='text' autocomplete='off' id='noautocomplete'/>"
-    "<INPUT type='text' disabled='disabled' id='notenabled'/>"
-    "<INPUT type='text' readonly id='readonly'/>"
-    "<INPUT type='text' style='visibility: hidden'"
-    "       id='invisible'/>"
-    "<INPUT type='text' style='display: none' id='displaynone'/>"
-    "<INPUT type='month' id='month'/>"
-    "<INPUT type='month' id='month-nonempty' value='2011-12'/>"
-    "<SELECT id='select'>"
-    "  <OPTION></OPTION>"
-    "  <OPTION value='CA'>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-nonempty'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-unchanged'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<SELECT id='select-displaynone' style='display:none'>"
-    "  <OPTION value='CA' selected>California</OPTION>"
-    "  <OPTION value='TX'>Texas</OPTION>"
-    "</SELECT>"
-    "<TEXTAREA id='textarea'></TEXTAREA>"
-    "<TEXTAREA id='textarea-nonempty'>Go&#10;away!</TEXTAREA>"
-    "<INPUT type='submit' name='reply-send' value='Send'/>"
-    "</HTML>";
+    R"(<html lang=fr>
+         <input id=firstname>
+         <input id=lastname>
+         <input type=hidden id=imhidden>
+         <input id=notempty value=Hi>
+         <input autocomplete=off id=noautocomplete>
+         <input disabled=disabled id=notenabled>
+         <input readonly id=readonly>
+         <input style='visibility: hidden' id=invisible>
+         <input style='display: none' id=displaynone>
+         <input type=month id=month>
+         <input type=month id='month-nonempty' value='2011-12'>
+         <select id=select>
+           <option></option>
+           <option value=CA>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-nonempty'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-unchanged'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <select id='select-displaynone' style='display:none'>
+           <option value=CA selected>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <textarea id=textarea></textarea>
+         <textarea id='textarea-nonempty'>Go&#10;away!</textarea>
+         <input type=submit name='reply-send' value=Send>
+       </html>)";
 
 std::string RetrievalMethodToString(
     const WebElementDescriptor::RetrievalMethod& method) {
@@ -309,8 +304,6 @@ std::pair<FormData, FormFieldData> FindFormAndField(
                                                extract_options)
       .value_or(std::make_pair(FormData(), FormFieldData()));
 }
-
-}  // namespace
 
 class FormAutofillTest : public ChromeRenderViewTest {
  public:
@@ -586,10 +579,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
         // Fields with "display:none" should not be autofilled.
         {FormControlType::kInputText, "displaynone", "", "", false,
          "filled displaynone", ""},
-        // Regular <input type="month"> should be autofilled.
+        // Regular <input type=month> should be autofilled.
         {FormControlType::kInputMonth, "month", "", "", true, "2017-11",
          "2017-11"},
-        // Non-empty <input type="month"> should not be autofilled.
+        // Non-empty <input type=month> should not be autofilled.
         {FormControlType::kInputMonth, "month-nonempty", "2011-12", "", false,
          "2017-11", "2011-12"},
         // Regular select fields should be autofilled.
@@ -647,10 +640,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
         // Fields with "display:none" should not previewed.
         {FormControlType::kInputText, "displaynone", "", "", false,
          "suggested displaynone", ""},
-        // Regular <input type="month"> should be previewed.
+        // Regular <input type=month> should be previewed.
         {FormControlType::kInputMonth, "month", "", "", true, "2017-11",
          "2017-11"},
-        // Non-empty <input type="month"> should not be previewed.
+        // Non-empty <input type=month> should not be previewed.
         {FormControlType::kInputMonth, "month-nonempty", "2011-12", "", false,
          "2017-11", ""},
         // Regular select fields should be previewed.
@@ -1936,7 +1929,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     expected.id_attribute = u"textarea-disabled";
     expected.name = expected.id_attribute;
-    expected.value = u"    Banana!  ";
+    expected.value = u"             Banana!\n           ";
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[7]);
 
     expected.id_attribute = u"textarea-noAC";
@@ -2370,7 +2363,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
 // We should be able to extract a normal text field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
-  LoadHTML("<INPUT type='text' id='element' value='value'/>");
+  LoadHTML(R"(<input id=element value=value>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2401,8 +2394,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
 
 // We should be able to extract a text field with autocomplete="off".
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompleteOff) {
-  LoadHTML("<INPUT type='text' id='element' value='value'"
-           "       autocomplete='off'/>");
+  LoadHTML(R"(<input id=element value=value autocomplete=off>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2424,8 +2416,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompleteOff) {
 
 // We should be able to extract a text field with maxlength specified.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMaxLength) {
-  LoadHTML("<INPUT type='text' id='element' value='value'"
-           "       maxlength='5'/>");
+  LoadHTML(R"(<input id=element value=value maxlength=5>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2446,7 +2437,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMaxLength) {
 
 // We should be able to extract a text field that has been autofilled.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
-  LoadHTML("<INPUT type='text' id='element' value='value'/>");
+  LoadHTML(R"(<input id=element value=value>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2470,8 +2461,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
 // We should be able to extract a radio or a checkbox field that has been
 // autofilled.
 TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
-  LoadHTML("<INPUT type='checkbox' id='checkbox' value='mail' checked/>"
-           "<INPUT type='radio' id='radio' value='male'/>");
+  LoadHTML(R"(<input type=checkbox id=checkbox value=mail checked>
+              <input type=radio id=radio value=male>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2508,10 +2499,10 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
 
 // We should be able to extract a <select> field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
-  LoadHTML("<SELECT id='element'/>"
-           "  <OPTION value='CA'>California</OPTION>"
-           "  <OPTION value='TX'>Texas</OPTION>"
-           "</SELECT>");
+  LoadHTML(R"(<select id=element>
+                <option value=CA>California</option>
+                <option value=TX>Texas</option>
+              </select>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2553,10 +2544,10 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 // We copy extra attributes for the select field.
 TEST_F(FormAutofillTest,
        WebFormControlElementToFormFieldSelect_ExtraAttributes) {
-  LoadHTML("<SELECT id='element' autocomplete='off'/>"
-           "  <OPTION value='CA'>California</OPTION>"
-           "  <OPTION value='TX'>Texas</OPTION>"
-           "</SELECT>");
+  LoadHTML(R"(<select id=element autocomplete=off>
+                <option value=CA>California</option>
+                <option value=TX>Texas</option>
+              </select>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2588,12 +2579,14 @@ TEST_F(FormAutofillTest,
 // When faced with <select> field with *many* options, we should trim them to a
 // reasonable number.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
-  std::string html = "<SELECT id='element'/>";
+  std::string html = R"(<select id=element>)";
   for (size_t i = 0; i < 2 * kMaxListSize; ++i) {
-    html += base::StringPrintf("<OPTION value='%" PRIuS "'>"
-                               "%" PRIuS "</OPTION>", i, i);
+    html += base::StringPrintf("<option value='%" PRIuS
+                               "'>"
+                               "%" PRIuS "</option>",
+                               i, i);
   }
-  html += "</SELECT>";
+  html += "</select>";
   LoadHTML(html.c_str());
 
   WebLocalFrame* frame = GetMainFrame();
@@ -2610,10 +2603,10 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
 // Test that we use the aria-label as the content if the <option> has no text.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
   LoadHTML(
-      "<SELECTLIST id='element'>"
-      "<OPTION aria-label='usa'><img/></OPTION>"
-      "<OPTION aria-label='uk'><img/></OPTION>"
-      "</SELECTLIST>");
+      R"(<selectlist id=element>
+         <option aria-label='usa'><img></option>
+         <option aria-label='uk'><img></option>
+         </selectlist>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2632,9 +2625,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
 TEST_F(FormAutofillTest,
        WebFormControlElementToFormFieldSelectListNestedNodes) {
   LoadHTML(
-      "<SELECTLIST id='element'>"
-      "<OPTION><div><img/><b>+1</b> (Canada)</div></OPTION>"
-      "</SELECTLIST>");
+      R"(<selectlist id=element>
+           <option><div><img><b>+1</b> (Canada)</div></option>
+         </selectlist>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2649,10 +2642,8 @@ TEST_F(FormAutofillTest,
 
 // We should be able to extract a <textarea> field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
-  LoadHTML("<TEXTAREA id='element'>"
-             "This element's value&#10;"
-             "spans multiple lines."
-           "</TEXTAREA>");
+  LoadHTML(R"(<textarea id=element>This element's value
+spans multiple lines.</textarea>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2678,9 +2669,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldTextArea) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_with_value);
 }
 
-// We should be able to extract an <input type="month"> field.
+// We should be able to extract an <input type=month> field.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMonthInput) {
-  LoadHTML("<INPUT type='month' id='element' value='2011-12'>");
+  LoadHTML(R"(<input type=month id=element value='2011-12'>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2706,9 +2697,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMonthInput) {
 
 // We should be able to extract password fields.
 TEST_F(FormAutofillTest, WebFormControlElementToPasswordFormField) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  <INPUT type='password' id='password' value='secret'/>"
-           "</FORM>");
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                <input type=password id=password value=secret>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2730,25 +2721,22 @@ TEST_F(FormAutofillTest, WebFormControlElementToPasswordFormField) {
 // We should be able to extract the autocompletetype attribute.
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
   std::string html =
-      "<INPUT type='text' id='absent'/>"
-      "<INPUT type='text' id='empty' autocomplete=''/>"
-      "<INPUT type='text' id='off' autocomplete='off'/>"
-      "<INPUT type='text' id='regular' autocomplete='email'/>"
-      "<INPUT type='text' id='multi-valued' "
-      "       autocomplete='billing email'/>"
-      "<INPUT type='text' id='experimental' x-autocompletetype='email'/>"
-      "<INPUT type='month' id='month' autocomplete='cc-exp'/>"
-      "<SELECT id='select' autocomplete='state'/>"
-      "  <OPTION value='CA'>California</OPTION>"
-      "  <OPTION value='TX'>Texas</OPTION>"
-      "</SELECT>"
-      "<TEXTAREA id='textarea' autocomplete='street-address'>"
-      "  Some multi-"
-      "  lined value"
-      "</TEXTAREA>";
-  html +=
-      "<INPUT type='text' id='malicious' autocomplete='" +
-      std::string(10000, 'x') + "'/>";
+      R"(<input id=absent>
+         <input id=empty autocomplete=''>
+         <input id=off autocomplete=off>
+         <input id=regular autocomplete=email>
+         <input id='multi-valued' autocomplete='billing email'>
+         <input id=experimental x-autocompletetype='email'>
+         <input type=month id=month autocomplete='cc-exp'>
+         <select id=select autocomplete=state>
+           <option value=CA>California</option>
+           <option value=TX>Texas</option>
+         </select>
+         <textarea id=textarea autocomplete='street-address'>
+           Some multi-
+           lined value
+         </textarea>)";
+  html += "<input id=malicious autocomplete='" + std::string(10000, 'x') + "'>";
   LoadHTML(html.c_str());
 
   WebLocalFrame* frame = GetMainFrame();
@@ -2771,7 +2759,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
       {"regular", FormControlType::kInputText, "email"},
       // Verify that we correctly extract multiple tokens as well.
       {"multi-valued", FormControlType::kInputText, "billing email"},
-      // Verify that <input type="month"> fields are supported.
+      // Verify that <input type=month> fields are supported.
       {"month", FormControlType::kInputMonth, "cc-exp"},
       // We previously extracted this data from the experimental
       // 'x-autocompletetype' attribute.  Now that the field type hints are part
@@ -2814,10 +2802,10 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
 }
 
 TEST_F(FormAutofillTest, DetectTextDirectionFromDirectStyle) {
-  LoadHTML("<STYLE>input{direction:rtl}</STYLE>"
-           "<FORM>"
-           "  <INPUT type='text' id='element'>"
-           "</FORM>");
+  LoadHTML(R"(<style>input{direction:rtl}</style>
+              <form>
+                <input id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2830,9 +2818,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromDirectStyle) {
 }
 
 TEST_F(FormAutofillTest, DetectTextDirectionFromDirectDIRAttribute) {
-  LoadHTML("<FORM>"
-           "  <INPUT dir='rtl' type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<form>
+                <input dir=rtl type=text id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2845,10 +2833,10 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromDirectDIRAttribute) {
 }
 
 TEST_F(FormAutofillTest, DetectTextDirectionFromParentStyle) {
-  LoadHTML("<STYLE>form{direction:rtl}</STYLE>"
-           "<FORM>"
-           "  <INPUT type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<style>form {direction: rtl}</style>
+              <form>
+                <input id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2861,9 +2849,9 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromParentStyle) {
 }
 
 TEST_F(FormAutofillTest, DetectTextDirectionFromParentDIRAttribute) {
-  LoadHTML("<FORM dir='rtl'>"
-           "  <INPUT type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<form dir=rtl>
+                <input id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2876,10 +2864,10 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromParentDIRAttribute) {
 }
 
 TEST_F(FormAutofillTest, DetectTextDirectionWhenStyleAndDIRAttributeMixed) {
-  LoadHTML("<STYLE>input{direction:ltr}</STYLE>"
-           "<FORM dir='rtl'>"
-           "  <INPUT type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<style>input{direction:ltr}</style>
+              <form dir=rtl>
+                <input id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2893,10 +2881,10 @@ TEST_F(FormAutofillTest, DetectTextDirectionWhenStyleAndDIRAttributeMixed) {
 
 TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
   // text-align: right
-  LoadHTML("<STYLE>input{direction:ltr;text-align:right}</STYLE>"
-           "<FORM>"
-           "  <INPUT type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<style>input{direction:ltr;text-align:right}</style>
+              <form>
+                <input id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2908,10 +2896,10 @@ TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction);
 
   // text-align: left
-  LoadHTML("<STYLE>input{direction:rtl;text-align:left}</STYLE>"
-           "<FORM>"
-           "  <INPUT type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<style>input{direction:rtl;text-align:left}</style>
+              <form>
+                <input id=element>
+              </form>)");
 
   frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2924,10 +2912,10 @@ TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
 
 TEST_F(FormAutofillTest,
        DetectTextDirectionWhenParentHasBothDIRAttributeAndStyle) {
-  LoadHTML("<STYLE>form{direction:ltr}</STYLE>"
-           "<FORM dir='rtl'>"
-           "  <INPUT type='text' id='element'/>"
-           "</FORM>");
+  LoadHTML(R"(<style>form{direction:ltr}</style>
+              <form dir=rtl>
+                <input id=element>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2940,11 +2928,11 @@ TEST_F(FormAutofillTest,
 }
 
 TEST_F(FormAutofillTest, DetectTextDirectionWhenAncestorHasInlineStyle) {
-  LoadHTML("<FORM style='direction:ltr'>"
-           "  <SPAN dir='rtl'>"
-           "    <INPUT type='text' id='element'/>"
-           "  </SPAN>"
-           "</FORM>");
+  LoadHTML(R"(<form style='direction:ltr'>
+                <span dir=rtl>
+                  <input id=element>
+                </span>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -2958,30 +2946,27 @@ TEST_F(FormAutofillTest, DetectTextDirectionWhenAncestorHasInlineStyle) {
 
 TEST_F(FormAutofillTest, WebFormElementToFormData) {
   LoadHTML(
-      "<FORM name='TestForm' action='http://cnn.com/submit/?a=1' method='post'>"
-      "  <LABEL for='firstname'>First name:</LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  <LABEL for='lastname'>Last name:</LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <LABEL for='street-address'>Address:</LABEL>"
-      "    <TEXTAREA id='street-address'>"
-      "123 Fantasy Ln.&#10;"
-      "Apt. 42"
-      "</TEXTAREA>"
-      "  <LABEL for='state'>State:</LABEL>"
-      "    <SELECT id='state'/>"
-      "      <OPTION value='CA'>California</OPTION>"
-      "      <OPTION value='TX'>Texas</OPTION>"
-      "    </SELECT>"
-      "  <LABEL for='password'>Password:</LABEL>"
-      "    <INPUT type='password' id='password' value='secret'/>"
-      "  <LABEL for='month'>Card expiration:</LABEL>"
-      "    <INPUT type='month' id='month' value='2011-12'/>"
-      "    <INPUT type='submit' name='reply-send' value='Send'/>"
-      // The below inputs should be ignored
-      "  <LABEL for='notvisible'>Hidden:</LABEL>"
-      "    <INPUT type='hidden' id='notvisible' value='apple'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com/submit/?a=1'>
+           <label for=firstname>First name:</label>
+             <input id=firstname value=John>
+           <label for=lastname>Last name:</label>
+             <input id=lastname value=Smith>
+           <label for=street-address>Address:</label>
+             <textarea id=street-address>123 Fantasy Ln.&#10;Apt. 42</textarea>
+           <label for=state>State:</label>
+             <select id=state>
+               <option value=CA>California</option>
+               <option value=TX>Texas</option>
+             </select>
+           <label for=password>Password:</label>
+             <input type=password id=password value=secret>
+           <label for=month>Card expiration:</label>
+             <input type=month id=month value='2011-12'>
+             <input type=submit name='reply-send' value=Send>
+           <!-- The below inputs should be ignored -->
+           <label for=notvisible>Hidden:</label>
+             <input type=hidden id=notvisible value=apple>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -3062,12 +3047,12 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
 }
 
 TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
-  LoadHTML("<form id=form>"
-           "  <label for='progress'>Progress:</label>"
-           "  <progress id='progress'></progress>"
-           "  <label for='firstname'>First name:</label>"
-           "  <input type='text' id='firstname' value='John'>"
-           "</form>");
+  LoadHTML(R"(<form id=form>
+                <label for=progress>Progress:</label>
+                <progress id=progress></progress>
+                <label for=firstname>First name:</label>
+                <input id=firstname value=John>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -3088,12 +3073,11 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
 
 // We should not be able to serialize a form with too many fillable fields.
 TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
-  std::string html =
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>";
+  std::string html = "<form name=TestForm action='http://cnn.com'>";
   for (size_t i = 0; i < (kMaxExtractableFields + 1); ++i) {
-    html += "<INPUT type='text'/>";
+    html += "<input>";
   }
-  html += "</FORM>";
+  html += "</form>";
   LoadHTML(html.c_str());
 
   WebLocalFrame* frame = GetMainFrame();
@@ -3116,15 +3100,14 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
 // an autocomplete='off' attribute is set for the form in HTML.
 TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
   LoadHTML(
-      "<FORM name='TestForm' id='form' action='http://cnn.com' method='post' "
-      "autocomplete='off'>"
-      "  <LABEL for='firstname'>First name:</LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  <LABEL for='lastname'>Last name:</LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <LABEL for='street-address'>Address:</LABEL>"
-      "    <INPUT type='text' id='addressline1' value='123 Test st.'/>"
-      "</FORM>");
+      R"(<form name=TestForm id=form action='http://cnn.com' autocomplete=off>
+           <label for=firstname>First name:</label>
+             <input id=firstname value=John>
+           <label for=lastname>Last name:</label>
+             <input id=lastname value=Smith>
+           <label for='street-address'>Address:</label>
+             <input id=addressline1 value='123 Test st.'>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -3146,14 +3129,14 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
 // which has an autocomplete='off' attribute set for it in HTML.
 TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
   LoadHTML(
-      "<FORM name='TestForm' id='form' action='http://cnn.com' method='post'>"
-      "  <LABEL for='firstname'>First name:</LABEL>"
-      "    <INPUT type='text' id='firstname' value='John' autocomplete='off'/>"
-      "  <LABEL for='lastname'>Last name:</LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <LABEL for='street-address'>Address:</LABEL>"
-      "    <INPUT type='text' id='addressline1' value='123 Test st.'/>"
-      "</FORM>");
+      R"(<form name=TestForm id=form action='http://cnn.com'>
+           <label for=firstname>First name:</label>
+             <input id=firstname value=John autocomplete=off>
+           <label for=lastname>Last name:</label>
+             <input id=lastname value=Smith>
+           <label for='street-address'>Address:</label>
+             <input id=addressline1 value='123 Test st.'>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -3178,9 +3161,9 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
 // autocomplete='one-time-code' attribute set in HTML.
 TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
   LoadHTML(
-      "<FORM name='TestForm' id='form' action='http://cnn.com' method='post'>"
-      "  <INPUT type='text' value='123' autocomplete='one-time-code'/>"
-      "</FORM>");
+      R"(<form name=TestForm id=form action='http://cnn.com'>
+           <input value=123 autocomplete='one-time-code'>
+         </form>)");
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
@@ -3200,12 +3183,11 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
 // Tests CSS classes are set.
 TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
   LoadHTML(
-      "<FORM name='TestForm' id='form' action='http://cnn.com' method='post' "
-      "autocomplete='off'>"
-      "    <INPUT type='text' id='firstname' class='firstname_field' />"
-      "    <INPUT type='text' id='lastname' class='lastname_field' />"
-      "    <INPUT type='text' id='addressline1'  />"
-      "</FORM>");
+      R"(<form name=TestForm id=form action='http://cnn.com' autocomplete=off>
+           <input id=firstname class='firstname_field'>
+           <input id=lastname class='lastname_field'>
+           <input id=addressline1>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -3219,7 +3201,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
       *base::MakeRefCounted<FieldDataManager>(),
       /*extract_options=*/{}, nullptr);
 
-  EXPECT_EQ(3U, form.fields.size());
+  ASSERT_EQ(3U, form.fields.size());
   EXPECT_EQ(u"firstname_field", form.fields[0].css_classes);
   EXPECT_EQ(u"lastname_field", form.fields[1].css_classes);
   EXPECT_EQ(std::u16string(), form.fields[2].css_classes);
@@ -3228,13 +3210,12 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
 // Tests id attributes are set.
 TEST_F(FormAutofillTest, WebFormElementToFormData_IdAttributes) {
   LoadHTML(
-      "<FORM name='TestForm' id='form' action='http://cnn.com' method='post' "
-      "autocomplete='off'>"
-      "    <INPUT type='text' name='name1' id='firstname' />"
-      "    <INPUT type='text' name='name2' id='lastname' />"
-      "    <INPUT type='text' name='same' id='same' />"
-      "    <INPUT type='text' id='addressline1' />"
-      "</FORM>");
+      R"(<form name=TestForm id=form action='http://cnn.com' autocomplete=off>
+           <input name=name1 id=firstname>
+           <input name=name2 id=lastname>
+           <input name=same id=same>
+           <input id=addressline1>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -3271,27 +3252,27 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_IdAttributes) {
 
 TEST_F(FormAutofillTest, ExtractForms) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  First name: <INPUT type='text' id='firstname' value='John'/>"
-      "  Last name: <INPUT type='text' id='lastname' value='Smith'/>"
-      "  Email: <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           First name: <input id=firstname value=John>
+           Last name: <input id=lastname value=Smith>
+           Email: <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, ExtractMultipleForms) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  <INPUT type='text' id='firstname' value='John'/>"
-           "  <INPUT type='text' id='lastname' value='Smith'/>"
-           "  <INPUT type='text' id='email' value='john@example.com'/>"
-           "  <INPUT type='submit' name='reply-send' value='Send'/>"
-           "</FORM>"
-           "<FORM name='TestForm2' action='http://zoo.com' method='post'>"
-           "  <INPUT type='text' id='firstname' value='Jack'/>"
-           "  <INPUT type='text' id='lastname' value='Adams'/>"
-           "  <INPUT type='text' id='email' value='jack@example.com'/>"
-           "  <INPUT type='submit' name='reply-send' value='Send'/>"
-           "</FORM>");
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                <input id=firstname value=John>
+                <input id=lastname value=Smith>
+                <input id=email value='john@example.com'>
+                <input type=submit name='reply-send' value=Send>
+              </form>
+              <form name=TestForm2 action='http://zoo.com'>
+                <input id=firstname value=Jack>
+                <input id=lastname value=Adams>
+                <input id=email value='jack@example.com'>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
 
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_NE(nullptr, web_frame);
@@ -3359,12 +3340,12 @@ TEST_F(FormAutofillTest, ExtractMultipleForms) {
 
 TEST_F(FormAutofillTest, OnlyExtractNewForms) {
   LoadHTML(
-      "<FORM id='testform' action='http://cnn.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='John'/>"
-      "  <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form id=testform action='http://cnn.com'>
+           <input id=firstname value=John>
+           <input id=lastname value=Smith>
+           <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_NE(nullptr, web_frame);
@@ -3379,11 +3360,11 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
 
   // Append to the current form will re-extract.
   ExecuteJavaScriptForTests(
-      "var newInput = document.createElement('input');"
-      "newInput.setAttribute('type', 'text');"
-      "newInput.setAttribute('id', 'telephone');"
-      "newInput.value = '12345';"
-      "document.getElementById('testform').appendChild(newInput);");
+      R"(var newInput = document.createElement('input');
+         newInput.setAttribute('type', 'text');
+         newInput.setAttribute('id', 'telephone');
+         newInput.value = '12345';
+         document.getElementById('testform').appendChild(newInput);)");
   base::RunLoop().RunUntilIdle();
 
   forms = UpdateFormCache(form_cache).updated_forms;
@@ -3424,26 +3405,26 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
 
   // Completely new form will also be extracted.
   ExecuteJavaScriptForTests(
-      "var newForm=document.createElement('form');"
-      "newForm.id='new_testform';"
-      "newForm.action='http://google.com';"
-      "newForm.method='post';"
-      "var newFirstname=document.createElement('input');"
-      "newFirstname.setAttribute('type', 'text');"
-      "newFirstname.setAttribute('id', 'second_firstname');"
-      "newFirstname.value = 'Bob';"
-      "var newLastname=document.createElement('input');"
-      "newLastname.setAttribute('type', 'text');"
-      "newLastname.setAttribute('id', 'second_lastname');"
-      "newLastname.value = 'Hope';"
-      "var newEmail=document.createElement('input');"
-      "newEmail.setAttribute('type', 'text');"
-      "newEmail.setAttribute('id', 'second_email');"
-      "newEmail.value = 'bobhope@example.com';"
-      "newForm.appendChild(newFirstname);"
-      "newForm.appendChild(newLastname);"
-      "newForm.appendChild(newEmail);"
-      "document.body.appendChild(newForm);");
+      R"(var newForm=document.createElement('form');
+        newForm.id='new_testform';
+        newForm.action='http://google.com';
+        newForm.method='post';
+        var newFirstname=document.createElement('input');
+        newFirstname.setAttribute('type', 'text');
+        newFirstname.setAttribute('id', 'second_firstname');
+        newFirstname.value = 'Bob';
+        var newLastname=document.createElement('input');
+        newLastname.setAttribute('type', 'text');
+        newLastname.setAttribute('id', 'second_lastname');
+        newLastname.value = 'Hope';
+        var newEmail=document.createElement('input');
+        newEmail.setAttribute('type', 'text');
+        newEmail.setAttribute('id', 'second_email');
+        newEmail.value = 'bobhope@example.com';
+        newForm.appendChild(newFirstname);
+        newForm.appendChild(newLastname);
+        newForm.appendChild(newEmail);
+        document.body.appendChild(newForm);)");
   base::RunLoop().RunUntilIdle();
 
   web_frame = GetMainFrame();
@@ -3474,8 +3455,8 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
 
 // We should not report additional forms for empty forms.
 TEST_F(FormAutofillTest, ExtractFormsNoFields) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "</FORM>");
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+              </form>)");
 
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_NE(nullptr, web_frame);
@@ -3488,13 +3469,13 @@ TEST_F(FormAutofillTest, ExtractFormsNoFields) {
 TEST_F(FormAutofillTest, WebFormElementToFormData_Autocomplete) {
   {
     // Form is still Autofill-able despite autocomplete=off.
-    LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'"
-             " autocomplete=off>"
-             "  <INPUT type='text' id='firstname' value='John'/>"
-             "  <INPUT type='text' id='lastname' value='Smith'/>"
-             "  <INPUT type='text' id='email' value='john@example.com'/>"
-             "  <INPUT type='submit' name='reply-send' value='Send'/>"
-             "</FORM>");
+    LoadHTML(
+        R"(<form name=TestForm action='http://cnn.com' autocomplete=off>
+             <input id=firstname value=John>
+             <input id=lastname value=Smith>
+             <input id=email value='john@example.com'>
+             <input type=submit name='reply-send' value=Send>
+           </form>)");
 
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
@@ -3513,57 +3494,47 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_Autocomplete) {
 
 TEST_F(FormAutofillTest, FindFormForInputElement) {
   TestFindFormForInputElement(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='John'/>"
-      "  <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <INPUT type='text' id='email' value='john@example.com'"
-      "autocomplete='off' />"
-      "  <INPUT type='text' id='phone' value='1.800.555.1234'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=John>
+           <input id=lastname value=Smith>
+           <input id=email value='john@example.com' autocomplete=off>
+           <input id=phone value='1.800.555.1234'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, FindFormForInputElementForUnownedForm) {
-    TestFindFormForInputElement(
-        "<HEAD><TITLE>delivery recipient</TITLE></HEAD>"
-        "<INPUT type='text' id='firstname' value='John'/>"
-        "<INPUT type='text' id='lastname' value='Smith'/>"
-        "<INPUT type='text' id='email' value='john@example.com'"
-        "autocomplete='off' />"
-        "<INPUT type='text' id='phone' value='1.800.555.1234'/>"
-        "<INPUT type='submit' name='reply-send' value='Send'/>",
-        true);
+  TestFindFormForInputElement(
+      R"(<head><title>delivery recipient</title></head>
+         <input id=firstname value=John>
+         <input id=lastname value=Smith>
+         <input id=email value='john@example.com' autocomplete=off>
+         <input id=phone value='1.800.555.1234'>
+         <input type=submit name='reply-send' value=Send>)",
+      true);
 }
 
 TEST_F(FormAutofillTest, FindFormForTextAreaElement) {
   TestFindFormForTextAreaElement(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='John'/>"
-      "  <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <INPUT type='text' id='email' value='john@example.com'"
-      "autocomplete='off' />"
-      "  <TEXTAREA id='street-address'>"
-      "123 Fantasy Ln.&#10;"
-      "Apt. 42"
-      "</TEXTAREA>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=John>
+           <input id=lastname value=Smith>
+           <input id=email value='john@example.com' autocomplete=off>
+           <textarea id='street-address'>123 Fantasy Ln.&#10;Apt. 42</textarea>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, FindFormForTextAreaElementForUnownedForm) {
   TestFindFormForTextAreaElement(
-      "<HEAD><TITLE>delivery address</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' value='John'/>"
-      "<INPUT type='text' id='lastname' value='Smith'/>"
-      "<INPUT type='text' id='email' value='john@example.com'"
-      "autocomplete='off' />"
-      "<TEXTAREA id='street-address'>"
-      "123 Fantasy Ln.&#10;"
-      "Apt. 42"
-      "</TEXTAREA>"
-      "<INPUT type='submit' name='reply-send' value='Send'/>",
+      R"(<head><title>delivery address</title></head>
+         <input id=firstname value=John>
+         <input id=lastname value=Smith>
+         <input id=email value='john@example.com' autocomplete=off>
+         <textarea id='street-address'>123 Fantasy Ln.&#10;Apt. 42</textarea>
+         <input type=submit name='reply-send' value=Send>)",
       true);
 }
 
@@ -3586,10 +3557,11 @@ TEST_F(FormAutofillTest, FillFormForUnownedNonEnglishForm) {
 }
 
 TEST_F(FormAutofillTest, FillFormForUnownedNonASCIIForm) {
-  std::string html("<HEAD><TITLE>accented latin: \xC3\xA0, thai: \xE0\xB8\x81, "
-      "control: \x04, nbsp: \xEF\xBB\xBF, non-BMP: \xF0\x9F\x8C\x80; This "
-      "should match a CHECKOUT flow despite the non-ASCII chars"
-      "</TITLE></HEAD>");
+  std::string html = R"(<head><title>accented latin: \xC3\xA0, )"
+                     R"(thai: \xE0\xB8\x81, control: \x04, )"
+                     R"(nbsp: \xEF\xBB\xBF, non-BMP: \xF0\x9F\x8C\x80; )"
+                     R"(This should match a CHECKOUT flow )"
+                     R"(despite the non-ASCII chars</title></head>)";
   html.append(kUnownedUntitledFormHtml);
   TestFillForm(html.c_str(), true, nullptr);
 }
@@ -3614,15 +3586,15 @@ TEST_F(FormAutofillTest, PreviewFormForUnownedNonEnglishForm) {
 
 TEST_F(FormAutofillTest, Labels) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  <LABEL for='firstname'> First name: </LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  <LABEL for='lastname'> Last name: </LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <LABEL for='email'> Email: </LABEL>"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           <label for=firstname> First name: </label>
+             <input id=firstname value=John>
+           <label for=lastname> Last name: </label>
+             <input id=lastname value=Smith>
+           <label for=email> Email: </label>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 // <label for=fieldId> elements are correctly assigned to their inputs. Multiple
@@ -3631,11 +3603,9 @@ TEST_F(FormAutofillTest, Labels) {
 // requires some refactoring of the fixture, as only owned forms are supported
 // at the moment.
 TEST_F(FormAutofillTest, LabelForAttribute) {
-  LoadHTML(R"(
-    <label for=fieldId>foo</label>
-    <label for=fieldId>bar</label>
-    <input id=fieldId>
-  )");
+  LoadHTML(R"(<label for=fieldId>foo</label>
+              <label for=fieldId>bar</label>
+              <input id=fieldId>)");
   ASSERT_NE(GetMainFrame(), nullptr);
 
   base::HistogramTester histogram_tester;
@@ -3669,15 +3639,15 @@ TEST_F(FormAutofillTest, LabelTextBehindInput) {
 
 TEST_F(FormAutofillTest, LabelsWithSpans) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  <LABEL for='firstname'><span>First name: </span></LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  <LABEL for='lastname'><span>Last name: </span></LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <LABEL for='email'><span>Email: </span></LABEL>"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           <label for=firstname><span>First name: </span></label>
+             <input id=firstname value=John>
+           <label for=lastname><span>Last name: </span></label>
+             <input id=lastname value=Smith>
+           <label for=email><span>Email: </span></label>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 // This test is different from FormAutofillTest.Labels in that the label
@@ -3709,15 +3679,15 @@ TEST_F(FormAutofillTest, InvalidLabels) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  <LABEL for='firstname'> First name: </LABEL>"
-      "    <INPUT type='text' name='firstname' value='John'/>"
-      "  <LABEL for='lastname'> Last name: </LABEL>"
-      "    <INPUT type='text' name='lastname' value='Smith'/>"
-      "  <LABEL for='email'> Email: </LABEL>"
-      "    <INPUT type='text' name='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+           <label for=firstname> First name: </label>
+             <input name=firstname value=John>
+           <label for=lastname> Last name: </label>
+             <input name=lastname value=Smith>
+           <label for=email> Email: </label>
+             <input name=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -3725,121 +3695,112 @@ TEST_F(FormAutofillTest, InvalidLabels) {
 // element associated with it.
 TEST_F(FormAutofillTest, OneLabelElement) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  First name:"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  <LABEL for='lastname'>Last name: </LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  Email:"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           First name:
+             <input id=firstname value=John>
+           <label for=lastname>Last name: </label>
+             <input id=lastname value=Smith>
+           Email:
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromText) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  First name:"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  Last name:"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  Email:"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           First name:
+             <input id=firstname value=John>
+           Last name:
+             <input id=lastname value=Smith>
+           Email:
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromParagraph) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  <P>First name:</P><INPUT type='text' "
-      "                           id='firstname' value='John'/>"
-      "  <P>Last name:</P>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <P>Email:</P>"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           <p>First name:</p><input id=firstname value=John>
+           <p>Last name:</p>
+             <input id=lastname value=Smith>
+           <p>Email:</p>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromBold) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  <B>First name:</B><INPUT type='text' "
-      "                           id='firstname' value='John'/>"
-      "  <B>Last name:</B>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <B>Email:</B>"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           <b>First name:</b><input id=firstname value=John>
+           <b>Last name:</b>
+             <input id=lastname value=Smith>
+           <b>Email:</b>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredPriorToImgOrBr) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  First name:<IMG/><INPUT type='text' "
-      "                          id='firstname' value='John'/>"
-      "  Last name:<IMG/>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  Email:<BR/>"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           First name:<img><input id=firstname value=John>
+           Last name:<img>
+             <input id=lastname value=Smith>
+           Email:<br>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableCell) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>First name:</TD>"
-      "    <TD><INPUT type='text' id='firstname' value='John'/></TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>Last name:</TD>"
-      "    <TD><INPUT type='text' id='lastname' value='Smith'/></TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>Email:</TD>"
-      "    <TD><INPUT type='text' id='email'"
-      "               value='john@example.com'/></TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+           <table>
+             <tr>
+               <td>First name:</td>
+               <td><input id=firstname value=John></td>
+             </tr>
+             <tr>
+               <td>Last name:</td>
+               <td><input id=lastname value=Smith></td>
+             </tr>
+             <tr>
+               <td>Email:</td>
+               <td><input id=email value='john@example.com'></td>
+             </tr>
+             <tr>
+               <td></td>
+               <td><input type=submit name='reply-send' value=Send></td>
+             </tr>
+           </table>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableCellTH) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TH>First name:</TH>"
-      "    <TD><INPUT type='text' id='firstname' value='John'/></TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TH>Last name:</TH>"
-      "    <TD><INPUT type='text' id='lastname' value='Smith'/></TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TH>Email:</TH>"
-      "    <TD><INPUT type='text' id='email'"
-      "               value='john@example.com'/></TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <th>First name:</th>
+             <td><input id=firstname value=John></td>
+           </tr>
+           <tr>
+             <th>Last name:</th>
+             <td><input id=lastname value=Smith></td>
+           </tr>
+           <tr>
+             <th>Email:</th>
+             <td><input id=email value='john@example.com'></td>
+           </tr>
+           <tr>
+             <td></td>
+             <td><input type=submit name='reply-send' value=Send></td>
+           </tr>
+         </table>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableCellNested) {
@@ -3865,55 +3826,55 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableCellNested) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>"
-      "      <FONT>"
-      "        First name:"
-      "      </FONT>"
-      "      <FONT>"
-      "        Bogus"
-      "      </FONT>"
-      "    </TD>"
-      "    <TD>"
-      "      <FONT>"
-      "        <INPUT type='text' id='firstname' value='John'/>"
-      "      </FONT>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <FONT>"
-      "        Last name:"
-      "      </FONT>"
-      "    </TD>"
-      "    <TD>"
-      "      <FONT>"
-      "        <INPUT type='text' id='lastname' value='Smith'/>"
-      "      </FONT>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <FONT>"
-      "        Email:"
-      "      </FONT>"
-      "    </TD>"
-      "    <TD>"
-      "      <FONT>"
-      "        <INPUT type='text' id='email' value='john@example.com'/>"
-      "      </FONT>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>
+               <font>
+                 First name:
+               </font>
+               <font>
+                 Bogus
+               </font>
+             </td>
+             <td>
+               <font>
+                 <input id=firstname value=John>
+               </font>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <font>
+                 Last name:
+               </font>
+             </td>
+             <td>
+               <font>
+                 <input id=lastname value=Smith>
+               </font>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <font>
+                 Email:
+               </font>
+             </td>
+             <td>
+               <font>
+                 <input id=email value='john@example.com'>
+               </font>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -3940,46 +3901,46 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableEmptyTDs) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>First Name</B>"
-      "    </TD>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>Last Name</B>"
-      "    </TD>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>Email</B>"
-      "    </TD>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>First Name</b>
+             </td>
+             <td></td>
+             <td>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Last Name</b>
+             </td>
+             <td></td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Email</b>
+             </td>
+             <td></td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4006,36 +3967,36 @@ TEST_F(FormAutofillTest, LabelsInferredFromPreviousTD) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>* First Name</TD>"
-      "    <TD>"
-      "      Bogus"
-      "      <INPUT type='hidden'/>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>* Last Name</TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>* Email</TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>* First Name</td>
+             <td>
+               Bogus
+               <input type=hidden>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>* Last Name</td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>* Email</td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4092,129 +4053,129 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableWithSpecialElements) {
   fields.push_back(expected);
 
   ExpectLabelsAndTypes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>First Name</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <SCRIPT> <!-- function test() { alert('ignored as label'); } -->"
-      "      </SCRIPT>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>Middle Name</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <NOSCRIPT>"
-      "        <P>Bad</P>"
-      "      </NOSCRIPT>"
-      "      <INPUT type='text' id='middlename' value='Joe'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>Last Name</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>Country</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <SELECT id='country'>"
-      "        <OPTION VALUE='US'>The value should be ignored as label."
-      "        </OPTION>"
-      "        <OPTION VALUE='JP'>JAPAN</OPTION>"
-      "      </SELECT>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN>"
-      "      <B>Email</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <!-- This comment should be ignored as inferred label.-->"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD></TD>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>First Name</b>
+             </td>
+             <td>
+               <script> <!-- function test() { alert('ignored as label'); } -->
+               </script>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Middle Name</b>
+             </td>
+             <td>
+               <noscript>
+                 <p>Bad</p>
+               </noscript>
+               <input id=middlename value=Joe>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Last Name</b>
+             </td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Country</b>
+             </td>
+             <td>
+               <select id=country>
+                 <option value=US>The value should be ignored as label.
+                 </option>
+                 <option value=JP>JAPAN</option>
+               </select>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Email</b>
+             </td>
+             <td>
+               <!-- This comment should be ignored as inferred label.-->
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)",
       fields);
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableLabels) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>"
-      "      <LABEL>First name:</LABEL>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <LABEL>Last name:</LABEL>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <LABEL>Email:</LABEL>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "<INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>
+               <label>First name:</label>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <label>Last name:</label>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <label>Email:</label>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+         </table>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableTDInterveningElements) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>"
-      "      First name:"
-      "      <BR>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      Last name:"
-      "      <BR>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      Email:"
-      "      <BR>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "<INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>
+               First name:
+               <br>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               Last name:
+               <br>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               Email:
+               <br>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+         </table>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 // Verify that we correctly infer labels when the label text spans multiple
@@ -4242,39 +4203,39 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableAdjacentElements) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN><B>First Name</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN><B>Last Name</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <SPAN>*</SPAN><B>Email</B>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>
+               <span>*</span><b>First Name</b>
+             </td>
+             <td>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span><b>Last Name</b>
+             </td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span><b>Email</b>
+             </td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4340,66 +4301,66 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableRow) {
   values.push_back(u"4444555544445555");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<TABLE>"
-      "  <TR>"
-      "    <TD>*First Name</TD>"
-      "    <TD>*Last Name</TD>"
-      "    <TD>*Email</TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD colspan='2'>NAME</TD>"
-      "    <TD>EMAIL</TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD colspan='2'>"
-      "      <INPUT type='text' id='name2' value='John Smith'/>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='email2' value='john@example2.com'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>Phone</TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <INPUT type='text' id='phone1' value='123'/>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='phone2' value='456'/>"
-      "    </TD>"
-      "    <TD>"
-      "      <INPUT type='text' id='phone3' value='7890'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TH>"
-      "      Credit Card Number"
-      "    </TH>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <INPUT type='text' name='ccnumber' value='4444555544445555'/>"
-      "    </TD>"
-      "  </TR>"
-      "  <TR>"
-      "    <TD>"
-      "      <INPUT type='submit' name='reply-send' value='Send'/>"
-      "    </TD>"
-      "  </TR>"
-      "</TABLE>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <table>
+           <tr>
+             <td>*First Name</td>
+             <td>*Last Name</td>
+             <td>*Email</td>
+           </tr>
+           <tr>
+             <td>
+               <input id=firstname value=John>
+             </td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td colspan=2>NAME</td>
+             <td>EMAIL</td>
+           </tr>
+           <tr>
+             <td colspan=2>
+               <input id=name2 value='John Smith'>
+             </td>
+             <td>
+               <input id=email2 value='john@example2.com'>
+             </td>
+           </tr>
+           <tr>
+             <td>Phone</td>
+           </tr>
+           <tr>
+             <td>
+               <input id=phone1 value=123>
+             </td>
+             <td>
+               <input id=phone2 value=456>
+             </td>
+             <td>
+               <input id=phone3 value=7890>
+             </td>
+           </tr>
+           <tr>
+             <th>
+               Credit Card Number
+             </th>
+           </tr>
+           <tr>
+             <td>
+               <input name=ccnumber value=4444555544445555>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4427,22 +4388,22 @@ TEST_F(FormAutofillTest, LabelsInferredFromListItem) {
   values.push_back(u"1212");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<DIV>"
-      "  <LI>"
-      "    <SPAN>Bogus</SPAN>"
-      "  </LI>"
-      "  <LI>"
-      "    <LABEL><EM>*</EM> Home Phone</LABEL>"
-      "    <INPUT type='text' id='areacode' value='415'/>"
-      "    <INPUT type='text' id='prefix' value='555'/>"
-      "    <INPUT type='text' id='suffix' value='1212'/>"
-      "  </LI>"
-      "  <LI>"
-      "    <INPUT type='submit' name='reply-send' value='Send'/>"
-      "  </LI>"
-      "</DIV>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <div>
+           <li>
+             <span>Bogus</span>
+           </li>
+           <li>
+             <label><em>*</em> Home Phone</label>
+             <input id=areacode value=415>
+             <input id=prefix value=555>
+             <input id=suffix value=1212>
+           </li>
+           <li>
+             <input type=submit name='reply-send' value=Send>
+           </li>
+         </div>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4469,50 +4430,50 @@ TEST_F(FormAutofillTest, LabelsInferredFromDefinitionList) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<DL>"
-      "  <DT>"
-      "    <SPAN>"
-      "      *"
-      "    </SPAN>"
-      "    <SPAN>"
-      "      First name:"
-      "    </SPAN>"
-      "    <SPAN>"
-      "      Bogus"
-      "    </SPAN>"
-      "  </DT>"
-      "  <DD>"
-      "    <FONT>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </FONT>"
-      "  </DD>"
-      "  <DT>"
-      "    <SPAN>"
-      "      Last name:"
-      "    </SPAN>"
-      "  </DT>"
-      "  <DD>"
-      "    <FONT>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </FONT>"
-      "  </DD>"
-      "  <DT>"
-      "    <SPAN>"
-      "      Email:"
-      "    </SPAN>"
-      "  </DT>"
-      "  <DD>"
-      "    <FONT>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </FONT>"
-      "  </DD>"
-      "  <DT></DT>"
-      "  <DD>"
-      "    <INPUT type='submit' name='reply-send' value='Send'/>"
-      "  </DD>"
-      "</DL>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+         <dl>
+           <dt>
+             <span>
+               *
+             </span>
+             <span>
+               First name:
+             </span>
+             <span>
+               Bogus
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=firstname value=John>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Last name:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=lastname value=Smith>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Email:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=email value='john@example.com'>
+             </font>
+           </dd>
+           <dt></dt>
+           <dd>
+             <input type=submit name='reply-send' value=Send>
+           </dd>
+         </dl>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4539,15 +4500,15 @@ TEST_F(FormAutofillTest, LabelsInferredWithSameName) {
   values.emplace_back();
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  Address Line 1:"
-      "    <INPUT type='text' name='Address'/>"
-      "  Address Line 2:"
-      "    <INPUT type='text' name='Address'/>"
-      "  Address Line 3:"
-      "    <INPUT type='text' name='Address'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+           Address Line 1:
+             <input name=Address>
+           Address Line 2:
+             <input name=Address>
+           Address Line 3:
+             <input name=Address>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
@@ -4586,155 +4547,155 @@ TEST_F(FormAutofillTest, LabelsInferredWithImageTags) {
   values.emplace_back();
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  Phone:"
-      "  <input type='text' name='dayphone1'>"
-      "  <img/>"
-      "  -"
-      "  <img/>"
-      "  <input type='text' name='dayphone2'>"
-      "  <img/>"
-      "  -"
-      "  <img/>"
-      "  <input type='text' name='dayphone3'>"
-      "  ext.:"
-      "  <input type='text' name='dayphone4'>"
-      "  <input type='text' name='dummy'>"
-      "  <input type='submit' name='reply-send' value='Send'>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+           Phone:
+           <input name=dayphone1>
+           <img>
+           -
+           <img>
+           <input name=dayphone2>
+           <img>
+           -
+           <img>
+           <input name=dayphone3>
+           ext.:
+           <input name=dayphone4>
+           <input name=dummy>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromDivTable) {
   ExpectJohnSmithLabelsAndNameAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<DIV>First name:<BR>"
-      "  <SPAN>"
-      "    <INPUT type='text' name='firstname' value='John'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<DIV>Last name:<BR>"
-      "  <SPAN>"
-      "    <INPUT type='text' name='lastname' value='Smith'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<DIV>Email:<BR>"
-      "  <SPAN>"
-      "    <INPUT type='text' name='email' value='john@example.com'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<input type='submit' name='reply-send' value='Send'>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <div>First name:<br>
+           <span>
+             <input name=firstname value=John>
+           </span>
+         </div>
+         <div>Last name:<br>
+           <span>
+             <input name=lastname value=Smith>
+           </span>
+         </div>
+         <div>Email:<br>
+           <span>
+             <input name=email value='john@example.com'>
+           </span>
+         </div>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromDivSiblingTable) {
   ExpectJohnSmithLabelsAndNameAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<DIV>First name:</DIV>"
-      "<DIV>"
-      "  <SPAN>"
-      "    <INPUT type='text' name='firstname' value='John'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<DIV>Last name:</DIV>"
-      "<DIV>"
-      "  <SPAN>"
-      "    <INPUT type='text' name='lastname' value='Smith'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<DIV>Email:</DIV>"
-      "<DIV>"
-      "  <SPAN>"
-      "    <INPUT type='text' name='email' value='john@example.com'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<input type='submit' name='reply-send' value='Send'>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <div>First name:</div>
+         <div>
+           <span>
+             <input name=firstname value=John>
+           </span>
+         </div>
+         <div>Last name:</div>
+         <div>
+           <span>
+             <input name=lastname value=Smith>
+           </span>
+         </div>
+         <div>Email:</div>
+         <div>
+           <span>
+             <input name=email value='john@example.com'>
+           </span>
+         </div>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromLabelInDivTable) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<LABEL>First name:</LABEL>"
-      "<LABEL for='lastname'>Last name:</LABEL>"
-      "<DIV>"
-      "  <INPUT type='text' id='firstname' value='John'>"
-      "</DIV>"
-      "<DIV>"
-      "  <INPUT type='text' id='lastname' value='Smith'>"
-      "</DIV>"
-      "<LABEL>Email:</LABEL>"
-      "<DIV>"
-      "  <SPAN>"
-      "    <INPUT type='text' id='email' value='john@example.com'>"
-      "  </SPAN>"
-      "</DIV>"
-      "<input type='submit' name='reply-send' value='Send'>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <label>First name:</label>
+         <label for=lastname>Last name:</label>
+         <div>
+           <input id=firstname value=John>
+         </div>
+         <div>
+           <input id=lastname value=Smith>
+         </div>
+         <label>Email:</label>
+         <div>
+           <span>
+             <input id=email value='john@example.com'>
+           </span>
+         </div>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromDefinitionListRatherThanDivTable) {
   ExpectJohnSmithLabelsAndIdAttributes(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "<DIV>This is not a label.<BR>"
-      "<DL>"
-      "  <DT>"
-      "    <SPAN>"
-      "      First name:"
-      "    </SPAN>"
-      "  </DT>"
-      "  <DD>"
-      "    <FONT>"
-      "      <INPUT type='text' id='firstname' value='John'/>"
-      "    </FONT>"
-      "  </DD>"
-      "  <DT>"
-      "    <SPAN>"
-      "      Last name:"
-      "    </SPAN>"
-      "  </DT>"
-      "  <DD>"
-      "    <FONT>"
-      "      <INPUT type='text' id='lastname' value='Smith'/>"
-      "    </FONT>"
-      "  </DD>"
-      "  <DT>"
-      "    <SPAN>"
-      "      Email:"
-      "    </SPAN>"
-      "  </DT>"
-      "  <DD>"
-      "    <FONT>"
-      "      <INPUT type='text' id='email' value='john@example.com'/>"
-      "    </FONT>"
-      "  </DD>"
-      "  <DT></DT>"
-      "  <DD>"
-      "    <INPUT type='submit' name='reply-send' value='Send'/>"
-      "  </DD>"
-      "</DL>"
-      "</DIV>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://cnn.com'>
+         <div>This is not a label.<br>
+         <dl>
+           <dt>
+             <span>
+               First name:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=firstname value=John>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Last name:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=lastname value=Smith>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Email:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=email value='john@example.com'>
+             </font>
+           </dd>
+           <dt></dt>
+           <dd>
+             <input type=submit name='reply-send' value=Send>
+           </dd>
+         </dl>
+         </div>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, FillFormMaxLength) {
   TestFillFormMaxLength(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' maxlength='5'/>"
-      "  <INPUT type='text' id='lastname' maxlength='7'/>"
-      "  <INPUT type='text' id='email' maxlength='9'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname maxlength=5>
+           <input id=lastname maxlength=7>
+           <input id=email maxlength=9>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, FillFormMaxLengthForUnownedForm) {
   TestFillFormMaxLength(
-      "<HEAD><TITLE>delivery recipient info</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' maxlength='5'/>"
-      "<INPUT type='text' id='lastname' maxlength='7'/>"
-      "<INPUT type='text' id='email' maxlength='9'/>"
-      "<INPUT type='submit' name='reply-send' value='Send'/>",
+      R"(<head><title>delivery recipient info</title></head>
+         <input id=firstname maxlength=5>
+         <input id=lastname maxlength=7>
+         <input id=email maxlength=9>
+         <input type=submit name='reply-send' value=Send>)",
       true);
 }
 
@@ -4743,89 +4704,89 @@ TEST_F(FormAutofillTest, FillFormMaxLengthForUnownedForm) {
 // maxlength (defined in WebKit.)
 TEST_F(FormAutofillTest, FillFormNegativeMaxLength) {
   TestFillFormNegativeMaxLength(
-      "<HEAD><TITLE>delivery recipient info</TITLE></HEAD>"
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' maxlength='-1'/>"
-      "  <INPUT type='text' id='lastname' maxlength='-10'/>"
-      "  <INPUT type='text' id='email' maxlength='-13'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<head><title>delivery recipient info</title></head>
+         <form name=TestForm action='http://abc.com'>
+           <input id=firstname maxlength='-1'>
+           <input id=lastname maxlength='-10'>
+           <input id=email maxlength='-13'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, FillFormNegativeMaxLengthForUnownedForm) {
   TestFillFormNegativeMaxLength(
-      "<HEAD><TITLE>delivery recipient info</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' maxlength='-1'/>"
-      "<INPUT type='text' id='lastname' maxlength='-10'/>"
-      "<INPUT type='text' id='email' maxlength='-13'/>"
-      "<INPUT type='submit' name='reply-send' value='Send'/>",
+      R"(<head><title>delivery recipient info</title></head>
+         <input id=firstname maxlength='-1'>
+         <input id=lastname maxlength='-10'>
+         <input id=email maxlength='-13'>
+         <input type=submit name='reply-send' value=Send>)",
       true);
 }
 
 TEST_F(FormAutofillTest, FillFormEmptyName) {
   TestFillFormEmptyName(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname'/>"
-      "  <INPUT type='text' id='lastname'/>"
-      "  <INPUT type='text' id='email'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname>
+           <input id=lastname>
+           <input id=email>
+           <input type=submit value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, FillFormEmptyNameForUnownedForm) {
   TestFillFormEmptyName(
-      "<HEAD><TITLE>delivery recipient info</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname'/>"
-      "<INPUT type='text' id='lastname'/>"
-      "<INPUT type='text' id='email'/>"
-      "<INPUT type='submit' value='Send'/>",
+      R"(<head><title>delivery recipient info</title></head>
+         <input id=firstname>
+         <input id=lastname>
+         <input id=email>
+         <input type=submit value=Send>)",
       true);
 }
 
 TEST_F(FormAutofillTest, FillFormEmptyFormNames) {
   TestFillFormEmptyFormNames(
-      "<FORM action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname'/>"
-      "  <INPUT type='text' id='middlename'/>"
-      "  <INPUT type='text' id='lastname'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>"
-      "<FORM action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='apple'/>"
-      "  <INPUT type='text' id='banana'/>"
-      "  <INPUT type='text' id='cantelope'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form action='http://abc.com'>
+           <input id=firstname>
+           <input id=middlename>
+           <input id=lastname>
+           <input type=submit value=Send>
+         </form>
+         <form action='http://abc.com'>
+           <input id=apple>
+           <input id=banana>
+           <input id=cantelope>
+           <input type=submit value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, FillFormEmptyFormNamesForUnownedForm) {
   TestFillFormEmptyFormNames(
-      "<HEAD><TITLE>enter delivery preferences</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname'/>"
-      "<INPUT type='text' id='middlename'/>"
-      "<INPUT type='text' id='lastname'/>"
-      "<INPUT type='text' id='apple'/>"
-      "<INPUT type='text' id='banana'/>"
-      "<INPUT type='text' id='cantelope'/>"
-      "<INPUT type='submit' value='Send'/>",
+      R"(<head><title>enter delivery preferences</title></head>
+         <input id=firstname>
+         <input id=middlename>
+         <input id=lastname>
+         <input id=apple>
+         <input id=banana>
+         <input id=cantelope>
+         <input type=submit value=Send>)",
       true);
 }
 
 TEST_F(FormAutofillTest, ThreePartPhone) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  Phone:"
-           "  <input type='text' name='dayphone1'>"
-           "  -"
-           "  <input type='text' name='dayphone2'>"
-           "  -"
-           "  <input type='text' name='dayphone3'>"
-           "  ext.:"
-           "  <input type='text' name='dayphone4'>"
-           "  <input type='submit' name='reply-send' value='Send'>"
-           "</FORM>");
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                Phone:
+                <input name=dayphone1>
+                -
+                <input name=dayphone2>
+                -
+                <input name=dayphone3>
+                ext.:
+                <input name=dayphone4>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -4869,20 +4830,19 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
 }
 
 TEST_F(FormAutofillTest, MaxLengthFields) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  Phone:"
-           "  <input type='text' maxlength='3' name='dayphone1'>"
-           "  -"
-           "  <input type='text' maxlength='3' name='dayphone2'>"
-           "  -"
-           "  <input type='text' maxlength='4' size='5'"
-           "         name='dayphone3'>"
-           "  ext.:"
-           "  <input type='text' maxlength='5' name='dayphone4'>"
-           "  <input type='text' name='default1'>"
-           "  <input type='text' maxlength='-1' name='invalid1'>"
-           "  <input type='submit' name='reply-send' value='Send'>"
-           "</FORM>");
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                Phone:
+                <input maxlength=3 name=dayphone1>
+                -
+                <input maxlength=3 name=dayphone2>
+                -
+                <input maxlength=4 size=5 name=dayphone3>
+                ext.:
+                <input maxlength=5 name=dayphone4>
+                <input name=default1>
+                <input maxlength='-1' name=invalid1>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -4947,133 +4907,122 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
 // into should be filled even though it's not technically empty.
 TEST_F(FormAutofillTest, FillFormNonEmptyField) {
   TestFillFormNonEmptyField(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname'/>"
-      "  <INPUT type='text' id='lastname'/>"
-      "  <INPUT type='text' id='email'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname>
+           <input id=lastname>
+           <input id=email>
+           <input type=submit value=Send>
+         </form>)",
       false, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
 TEST_F(FormAutofillTest, FillFormNonEmptyFieldsWithDefaultValues) {
   TestFillFormNonEmptyField(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='Enter first name'/>"
-      "  <INPUT type='text' id='lastname' value='Enter last name'/>"
-      "  <INPUT type='text' id='email' value='Enter email'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value='Enter first name'>
+           <input id=lastname value='Enter last name'>
+           <input id=email value='Enter email'>
+           <input type=submit value=Send>
+         </form>)",
       false, "Enter last name", "Enter email", nullptr, nullptr, nullptr);
 }
 
 TEST_F(FormAutofillTest, FillFormModifyValues) {
   TestFillFormAndModifyValues(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' placeholder='First Name' "
-      "value='First Name'/>"
-      "  <INPUT type='text' id='lastname' placeholder='Last Name' value='Last "
-      "Name'/>"
-      "  <INPUT type='text' id='phone' placeholder='Phone' value='Phone'/>"
-      "  <INPUT type='text' id='cc' placeholder='Credit Card Number' "
-      "value='Credit Card'/>"
-      "  <INPUT type='text' id='city' placeholder='City' value='City'/>"
-      "  <SELECT id='state' name='state' placeholder='State'>"
-      "    <OPTION selected>?</OPTION>"
-      "    <OPTION>AA</OPTION>"
-      "    <OPTION>AE</OPTION>"
-      "    <OPTION>AK</OPTION>"
-      "  </SELECT>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname placeholder='First Name' value='First Name'>
+           <input id=lastname placeholder='Last Name' value='Last Name'>
+           <input id=phone placeholder=Phone value=Phone>
+           <input id=cc placeholder='Credit Card Number' value='Credit Card'>
+           <input id=city placeholder=City value=City>
+           <select id=state name=state placeholder=State>
+             <option selected>?</option>
+             <option>AA</option>
+             <option>AE</option>
+             <option>AK</option>
+           </select>
+           <input type=submit value=Send>
+         </form>)",
       "First Name", "Last Name", "Phone", "Credit Card Number", "City",
       "State");
 }
 
 TEST_F(FormAutofillTest, FillFormModifyInitiatingValue) {
   TestFillFormAndModifyInitiatingValue(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='cc' placeholder='Credit Card Number' "
-      "value='Credit Card'/>"
-      "  <INPUT type='text' id='expiration_date' placeholder='Expiration Date' "
-      "value='Expiration Date'/>"
-      "  <INPUT type='text' id='name' placeholder='Full Name' "
-      "value='Full Name'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=cc placeholder='Credit Card Number' value='Credit Card'>
+           <input id=expiration_date placeholder='Expiration Date'
+                  value='Expiration Date'>
+           <input id=name placeholder='Full Name' value='Full Name'>
+           <input type=submit value=Send>
+         </form>)",
       "Credit Card Number", "Expiration Date", "Full Name");
 }
 
 TEST_F(FormAutofillTest, FillFormJSModifiesUserInputValue) {
   TestFillFormJSModifiesUserInputValue(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='cc' placeholder='Credit Card Number' "
-      "value='Credit Card'/>"
-      "  <INPUT type='text' id='expiration_date' placeholder='Expiration Date' "
-      "value='Expiration Date'/>"
-      "  <INPUT type='text' id='name' placeholder='Full Name' "
-      "value='Full Name'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=cc placeholder='Credit Card Number' value='Credit Card'>
+           <input id=expiration_date placeholder='Expiration Date'
+                  value='Expiration Date'>
+           <input id=name placeholder='Full Name' value='Full Name'>
+           <input type=submit value=Send>
+         </form>)",
       "Credit Card Number", "Expiration Date", "Full Name");
 }
 
 TEST_F(FormAutofillTest, FillFormNonEmptyFieldsWithPlaceholderValues) {
   TestFillFormNonEmptyField(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' placeholder='First Name' "
-      "value='First Name'/>"
-      "  <INPUT type='text' id='lastname' placeholder='Last Name' value='Last "
-      "Name'/>"
-      "  <INPUT type='text' id='email' placeholder='Email' value='Email'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com' method=POST>
+           <input id=firstname placeholder='First Name' value='First Name'>
+           <input id=lastname placeholder='Last Name' value='Last Name'>
+           <input id=email placeholder=Email value=Email>
+           <input type=submit value=Send>
+         </form>)",
       false, nullptr, nullptr, "First Name", "Last Name", "Email");
 }
 
 TEST_F(FormAutofillTest, FillFormWithPlaceholderValues) {
   TestFillFormWithPlaceholderValues(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' placeholder='First Name' "
-      "value='First Name'/>"
-      "  <INPUT type='text' id='lastname' placeholder='Last Name'"
-      "Name'/>"
-      "  <INPUT type='text' id='email' placeholder='Email' value='Email'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname placeholder='First Name' value='First Name'>
+           <input id=lastname placeholder='Last Name'>
+           <input id=email placeholder=Email value=Email>
+           <input type=submit value=Send>
+         </form>)",
       "First Name", "Last Name", "Email");
 }
 
 TEST_F(FormAutofillTest, FillFormNonEmptyFieldForUnownedForm) {
   TestFillFormNonEmptyField(
-      "<HEAD><TITLE>delivery recipient info</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname'/>"
-      "<INPUT type='text' id='lastname'/>"
-      "<INPUT type='text' id='email'/>"
-      "<INPUT type='submit' value='Send'/>",
+      R"(<head><title>delivery recipient info</title></head>
+         <input id=firstname>
+         <input id=lastname>
+         <input id=email>
+         <input type=submit value=Send>)",
       true, nullptr, nullptr, nullptr, nullptr, nullptr);
 }
 
 TEST_F(FormAutofillTest, UndoAutofill) {
   LoadHTML(R"(
-    <form id="form_id">
-        <input id="text_id_1">
-        <input id="text_id_2">
-        <select id="select_id_1">
-          <option value="undo_select_option_1">Foo</option>
-          <option value="autofill_select_option_1">Bar</option>
+    <form id=form_id>
+        <input id=text_id_1>
+        <input id=text_id_2>
+        <select id=select_id_1>
+          <option value=undo_select_option_1>Foo</option>
+          <option value=autofill_select_option_1>Bar</option>
         </select>
-        <select id="select_id_2">
-          <option value="undo_select_option_2">Foo</option>
-          <option value="autofill_select_option_2">Bar</option>
+        <select id=select_id_2>
+          <option value=undo_select_option_2>Foo</option>
+          <option value=autofill_select_option_2>Bar</option>
         </select>
-        <selectlist id="selectlist_id_1">
-          <option value="undo_selectlist_option_1">Foo</option>
-          <option value="autofill_selectlist_option_1">Bar</option>
+        <selectlist id=selectlist_id_1>
+          <option value=undo_selectlist_option_1>Foo</option>
+          <option value=autofill_selectlist_option_1>Bar</option>
         </selectlist>
-        <selectlist id="selectlist_id_2">
-          <option value="undo_selectlist_option_2">Foo</option>
-          <option value="autofill_selectlist_option_2">Bar</option>
+        <selectlist id=selectlist_id_2>
+          <option value=undo_selectlist_option_2>Foo</option>
+          <option value=autofill_selectlist_option_2>Bar</option>
         </selectlist>
       </form>
   )");
@@ -5169,181 +5118,179 @@ TEST_F(FormAutofillTest, UndoAutofill) {
 
 TEST_F(FormAutofillTest, ClearSectionWithNode) {
   TestClearSectionWithNode(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='Wyatt'/>"
-      "  <INPUT type='text' id='lastname' value='Earp'/>"
-      "  <INPUT type='text' autocomplete='off' id='noAC' value='one'/>"
-      "  <INPUT type='text' id='notenabled' disabled='disabled'>"
-      "  <INPUT type='month' id='month' value='2012-11'>"
-      "  <INPUT type='month' id='month-disabled' value='2012-11'"
-      "         disabled='disabled'>"
-      "  <TEXTAREA id='textarea'>Apple.</TEXTAREA>"
-      "  <TEXTAREA id='textarea-disabled' disabled='disabled'>"
-      "    Banana!"
-      "  </TEXTAREA>"
-      "  <TEXTAREA id='textarea-noAC' autocomplete='off'>Carrot?</TEXTAREA>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=Wyatt>
+           <input id=lastname value=Earp>
+           <input autocomplete=off id=noAC value=one>
+           <input id=notenabled disabled=disabled>
+           <input type=month id=month value='2012-11'>
+           <input type=month id=month-disabled value=2012-11 disabled=disabled>
+           <textarea id=textarea>Apple.</textarea>
+           <textarea id='textarea-disabled' disabled=disabled>
+             Banana!
+           </textarea>
+           <textarea id='textarea-noAC' autocomplete=off>Carrot?</textarea>
+           <input type=submit value=Send>
+         </form>)",
       false);
 }
 
 // Test regular FillForm function.
 TEST_F(FormAutofillTest, ClearTwoSections) {
   TestClearTwoSections(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname-shipping'/>"
-      "  <INPUT type='text' id='lastname-shipping'/>"
-      "  <INPUT type='text' id='city-shipping'/>"
-      "  <INPUT type='text' id='firstname-billing'/>"
-      "  <INPUT type='text' id='lastname-billing'/>"
-      "  <INPUT type='text' id='city-billing'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id='firstname-shipping'>
+           <input id='lastname-shipping'>
+           <input id='city-shipping'>
+           <input id='firstname-billing'>
+           <input id='lastname-billing'>
+           <input id='city-billing'>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest, ClearSectionWithNodeForUnownedForm) {
   TestClearSectionWithNode(
-      "<HEAD><TITLE>store checkout</TITLE></HEAD>"
-      "  <!-- Indented on purpose //-->"
-      "  <INPUT type='text' id='firstname' value='Wyatt'/>"
-      "  <INPUT type='text' id='lastname' value='Earp'/>"
-      "  <INPUT type='text' autocomplete='off' id='noAC' value='one'/>"
-      "  <INPUT type='text' id='notenabled' disabled='disabled'>"
-      "  <INPUT type='month' id='month' value='2012-11'>"
-      "  <INPUT type='month' id='month-disabled' value='2012-11'"
-      "         disabled='disabled'>"
-      "  <TEXTAREA id='textarea'>Apple.</TEXTAREA>"
-      "  <TEXTAREA id='textarea-disabled' disabled='disabled'>"
-      "    Banana!"
-      "  </TEXTAREA>"
-      "  <TEXTAREA id='textarea-noAC' autocomplete='off'>Carrot?</TEXTAREA>"
-      "  <INPUT type='submit' value='Send'/>",
+      R"(<head><title>store checkout</title></head>
+           <!-- Indented on purpose //-->
+           <input id=firstname value=Wyatt>
+           <input id=lastname value=Earp>
+           <input autocomplete=off id=noAC value=one>
+           <input id=notenabled disabled=disabled>
+           <input type=month id=month value=2012-11>
+           <input type=month id=month-disabled value=2012-11 disabled=disabled>
+           <textarea id=textarea>Apple.</textarea>
+           <textarea id='textarea-disabled' disabled=disabled>
+             Banana!
+           </textarea>
+           <textarea id='textarea-noAC' autocomplete=off>Carrot?</textarea>
+           <input type=submit value=Send>)",
       true);
 }
 
 TEST_F(FormAutofillTest, ClearSectionWithNodeContainingSelectOne) {
   TestClearSectionWithNodeContainingSelectOne(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='Wyatt'/>"
-      "  <INPUT type='text' id='lastname' value='Earp'/>"
-      "  <SELECT id='state' name='state'>"
-      "    <OPTION selected>?</OPTION>"
-      "    <OPTION>AA</OPTION>"
-      "    <OPTION>AE</OPTION>"
-      "    <OPTION>AK</OPTION>"
-      "  </SELECT>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=Wyatt>
+           <input id=lastname value=Earp>
+           <select id=state name=state>
+             <option selected>?</option>
+             <option>AA</option>
+             <option>AE</option>
+             <option>AK</option>
+           </select>
+           <input type=submit value=Send>
+         </form>)",
       false);
 }
 
 TEST_F(FormAutofillTest,
        ClearSectionWithNodeContainingSelectOneForUnownedForm) {
   TestClearSectionWithNodeContainingSelectOne(
-      "<HEAD><TITLE>store checkout</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' value='Wyatt'/>"
-      "<INPUT type='text' id='lastname' value='Earp'/>"
-      "<SELECT id='state' name='state'>"
-      "  <OPTION selected>?</OPTION>"
-      "  <OPTION>AA</OPTION>"
-      "  <OPTION>AE</OPTION>"
-      "  <OPTION>AK</OPTION>"
-      "</SELECT>"
-      "<INPUT type='submit' value='Send'/>",
+      R"(<head><title>store checkout</title></head>
+         <input id=firstname value=Wyatt>
+         <input id=lastname value=Earp>
+         <select id=state name=state>
+           <option selected>?</option>
+           <option>AA</option>
+           <option>AE</option>
+           <option>AK</option>
+         </select>
+         <input type=submit value=Send>)",
       true);
 }
 
 TEST_F(FormAutofillTest, ClearPreviewedElements) {
   TestClearPreviewedElements(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='Wyatt'/>"
-      "  <INPUT type='text' id='lastname'/>"
-      "  <INPUT type='text' id='email'/>"
-      "  <INPUT type='email' id='email2'/>"
-      "  <INPUT type='tel' id='phone'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=Wyatt>
+           <input id=lastname>
+           <input id=email>
+           <input type=email id=email2>
+           <input type=tel id=phone>
+           <input type=submit value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, ClearPreviewedFormWithElementForUnownedForm) {
   TestClearPreviewedElements(
-      "<HEAD><TITLE>store checkout</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' value='Wyatt'/>"
-      "<INPUT type='text' id='lastname'/>"
-      "<INPUT type='text' id='email'/>"
-      "<INPUT type='email' id='email2'/>"
-      "<INPUT type='tel' id='phone'/>"
-      "<INPUT type='submit' value='Send'/>");
+      R"(<head><title>store checkout</title></head>
+         <input id=firstname value=Wyatt>
+         <input id=lastname>
+         <input id=email>
+         <input type=email id=email2>
+         <input type=tel id=phone>
+         <input type=submit value=Send>)");
 }
 
 TEST_F(FormAutofillTest, ClearPreviewedFormWithNonEmptyInitiatingNode) {
   TestClearPreviewedFormWithNonEmptyInitiatingNode(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='W'/>"
-      "  <INPUT type='text' id='lastname'/>"
-      "  <INPUT type='text' id='email'/>"
-      "  <INPUT type='email' id='email2'/>"
-      "  <INPUT type='tel' id='phone'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=W>
+           <input id=lastname>
+           <input id=email>
+           <input type=email id=email2>
+           <input type=tel id=phone>
+           <input type=submit value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest,
        ClearPreviewedFormWithNonEmptyInitiatingNodeForUnownedForm) {
   TestClearPreviewedFormWithNonEmptyInitiatingNode(
-      "<HEAD><TITLE>shipping details</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' value='W'/>"
-      "<INPUT type='text' id='lastname'/>"
-      "<INPUT type='text' id='email'/>"
-      "<INPUT type='email' id='email2'/>"
-      "<INPUT type='tel' id='phone'/>"
-      "<INPUT type='submit' value='Send'/>");
+      R"(<head><title>shipping details</title></head>
+         <input id=firstname value=W>
+         <input id=lastname>
+         <input id=email>
+         <input type=email id=email2>
+         <input type=tel id=phone>
+         <input type=submit value=Send>)");
 }
 
 TEST_F(FormAutofillTest, ClearPreviewedFormWithAutofilledInitiatingNode) {
   TestClearPreviewedFormWithAutofilledInitiatingNode(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='W'/>"
-      "  <INPUT type='text' id='lastname'/>"
-      "  <INPUT type='text' id='email'/>"
-      "  <INPUT type='email' id='email2'/>"
-      "  <INPUT type='tel' id='phone'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=W>
+           <input id=lastname>
+           <input id=email>
+           <input type=email id=email2>
+           <input type=tel id=phone>
+           <input type=submit value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest,
        ClearPreviewedFormWithAutofilledInitiatingNodeForUnownedForm) {
   TestClearPreviewedFormWithAutofilledInitiatingNode(
-      "<HEAD><TITLE>shipping details</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' value='W'/>"
-      "<INPUT type='text' id='lastname'/>"
-      "<INPUT type='text' id='email'/>"
-      "<INPUT type='email' id='email2'/>"
-      "<INPUT type='tel' id='phone'/>"
-      "<INPUT type='submit' value='Send'/>");
+      R"(<head><title>shipping details</title></head>
+         <input id=firstname value=W>
+         <input id=lastname>
+         <input id=email>
+         <input type=email id=email2>
+         <input type=tel id=phone>
+         <input type=submit value=Send>)");
 }
 
 // Autofill's "Clear Form" should clear only autofilled fields
 TEST_F(FormAutofillTest, ClearOnlyAutofilledFields) {
   TestClearOnlyAutofilledFields(
-      "<FORM name='TestForm' action='http://abc.com' method='post'>"
-      "  <INPUT type='text' id='firstname' value='Wyatt'/>"
-      "  <INPUT type='text' id='lastname' value='Earp'/>"
-      "  <INPUT type='email' id='email' value='wyatt@earp.com'/>"
-      "  <INPUT type='tel' id='phone' value='650-777-9999'/>"
-      "  <INPUT type='submit' value='Send'/>"
-      "</FORM>");
+      R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname value=Wyatt>
+           <input id=lastname value=Earp>
+           <input type=email id=email value='wyatt@earp.com'>
+           <input type=tel id=phone value='650-777-9999'>
+           <input type=submit value=Send>
+         </form>)");
 }
 
 TEST_F(FormAutofillTest, ClearOnlyAutofilledFieldsForUnownedForm) {
   TestClearOnlyAutofilledFields(
-      "<HEAD><TITLE>shipping details</TITLE></HEAD>"
-      "<INPUT type='text' id='firstname' value='Wyatt'/>"
-      "<INPUT type='text' id='lastname' value='Earp'/>"
-      "<INPUT type='email' id='email' value='wyatt@earp.com'/>"
-      "<INPUT type='tel' id='phone' value='650-777-9999'/>"
-      "<INPUT type='submit' value='Send'/>");
+      R"(<head><title>shipping details</title></head>
+         <input id=firstname value=Wyatt>
+         <input id=lastname value=Earp>
+         <input type=email id=email value='wyatt@earp.com'>
+         <input type=tel id=phone value='650-777-9999'>
+         <input type=submit value=Send>)");
 }
 
 // If we have multiple labels per id, the labels concatenated into label string.
@@ -5370,24 +5317,24 @@ TEST_F(FormAutofillTest, MultipleLabelsPerElement) {
   values.push_back(u"john@example.com");
 
   ExpectLabels(
-      "<FORM name='TestForm' action='http://cnn.com' method='post'>"
-      "  <LABEL for='firstname'> First Name: </LABEL>"
-      "  <LABEL for='firstname'></LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "  <LABEL for='lastname'></LABEL>"
-      "  <LABEL for='lastname'> Last Name: </LABEL>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  <LABEL for='email'> Email: </LABEL>"
-      "  <LABEL for='email'> xxx@yyy.com </LABEL>"
-      "    <INPUT type='text' id='email' value='john@example.com'/>"
-      "  <INPUT type='submit' name='reply-send' value='Send'/>"
-      "</FORM>",
+      R"(<form name=TestForm action='http://cnn.com'>
+           <label for=firstname> First Name: </label>
+           <label for=firstname></label>
+             <input id=firstname value=John>
+           <label for=lastname></label>
+           <label for=lastname> Last Name: </label>
+             <input id=lastname value=Smith>
+           <label for=email> Email: </label>
+           <label for=email> xxx@yyy.com </label>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)",
       id_attributes, name_attributes, labels, names, values);
 }
 
 TEST_F(FormAutofillTest, ClickElement) {
-  LoadHTML("<BUTTON id='link'>Button</BUTTON>"
-           "<BUTTON name='button'>Button</BUTTON>");
+  LoadHTML(R"(<button id=link>Button</button>
+              <button name=button>Button</button>)");
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
@@ -5412,16 +5359,16 @@ TEST_F(FormAutofillTest, ClickElement) {
 }
 
 TEST_F(FormAutofillTest, SelectOneAsText) {
-  LoadHTML("<FORM name='TestForm' action='http://cnn.com' method='post'>"
-           "  <INPUT type='text' id='firstname' value='John'/>"
-           "  <INPUT type='text' id='lastname' value='Smith'/>"
-           "  <SELECT id='country'>"
-           "    <OPTION value='AF'>Afghanistan</OPTION>"
-           "    <OPTION value='AL'>Albania</OPTION>"
-           "    <OPTION value='DZ'>Algeria</OPTION>"
-           "  </SELECT>"
-           "  <INPUT type='submit' name='reply-send' value='Send'/>"
-           "</FORM>");
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                <input id=firstname value=John>
+                <input id=lastname value=Smith>
+                <select id=country>
+                  <option value=AF>Afghanistan</option>
+                  <option value=AL>Albania</option>
+                  <option value=DZ>Algeria</option>
+                </select>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -5508,15 +5455,15 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
 }
 
 TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
-  LoadHTML("<HEAD><TITLE>delivery info</TITLE></HEAD>"
-           "<DIV>"
-           "  <LABEL for='firstname'>First name:</LABEL>"
-           "  <LABEL for='lastname'>Last name:</LABEL>"
-           "  <INPUT type='text' id='firstname' value='John'/>"
-           "  <INPUT type='text' id='lastname' value='Smith'/>"
-           "  <LABEL for='email'>Email:</LABEL>"
-           "  <INPUT type='text' id='email' value='john@example.com'/>"
-           "</DIV>");
+  LoadHTML(R"(<head><title>delivery info</title></head>
+              <div>
+                <label for=firstname>First name:</label>
+                <label for=lastname>Last name:</label>
+                <input id=firstname value=John>
+                <input id=lastname value=Smith>
+                <label for=email>Email:</label>
+                <input id=email value='john@example.com'>
+              </div>)");
   FormData form =
       *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
                        *base::MakeRefCounted<FieldDataManager>());
@@ -5571,56 +5518,56 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
   } test_cases[] = {
       // An empty form should not be extracted
       {"Empty Form",
-       "<FORM name='TestForm' action='http://abc.com' method='post'>"
-       "</FORM>",
+       R"(<form name=TestForm action='http://abc.com'>
+          </form>)",
        0u, true},
       // A form with less than three fields with no autocomplete type(s) should
       // be extracted because no minimum is being enforced for upload.
       {"Small Form no autocomplete",
-       "<FORM name='TestForm' action='http://abc.com' method='post'>"
-       "  <INPUT type='text' id='firstname'/>"
-       "</FORM>",
+       R"(<form name=TestForm action='http://abc.com'>
+            <input id=firstname>
+          </form>)",
        1u, true},
       // A form with less than three fields with at least one autocomplete type
       // should be extracted.
       {"Small Form w/ autocomplete",
-       "<FORM name='TestForm' action='http://abc.com' method='post'>"
-       "  <INPUT type='text' id='firstname' autocomplete='given-name'/>"
-       "</FORM>",
+       R"(<form name=TestForm action='http://abc.com'>
+            <input id=firstname autocomplete='given-name'>
+          </form>)",
        1u, true},
       // A form with three or more fields should be extracted.
       {"3 Field Form",
-       "<FORM name='TestForm' action='http://abc.com' method='post'>"
-       "  <INPUT type='text' id='firstname'/>"
-       "  <INPUT type='text' id='lastname'/>"
-       "  <INPUT type='text' id='email'/>"
-       "  <INPUT type='submit' value='Send'/>"
-       "</FORM>",
+       R"(<form name=TestForm action='http://abc.com'>
+            <input id=firstname>
+            <input id=lastname>
+            <input id=email>
+            <input type=submit value=Send>
+          </form>)",
        1u, true},
       // An input field with an autocomplete attribute outside of a form should
       // be extracted.
       {"Small, formless, with autocomplete",
-       "<INPUT type='text' id='firstname' autocomplete='given-name'/>"
-       "<INPUT type='submit' value='Send'/>",
+       R"(<input id=firstname autocomplete='given-name'>
+          <input type=submit value=Send>)",
        1u, false},
       // An input field without an autocomplete attribute outside of a form,
       // with no checkout hints, should not be extracted.
       {"Small, formless, no autocomplete",
-       "<INPUT type='text' id='firstname'/>"
-       "<INPUT type='submit' value='Send'/>",
+       R"(<input id=firstname>
+          <input type=submit value=Send>)",
        1u, false},
       // A form with one field which is password gets extracted.
       {"Password-Only",
-       "<FORM name='TestForm' action='http://abc.com' method='post'>"
-       "  <INPUT type='password' id='pw'/>"
-       "</FORM>",
+       R"(<form name=TestForm action='http://abc.com'>
+            <input type=password id=pw>
+          </form>)",
        1u, true},
       // A form with two fields which are passwords should be extracted.
       {"two passwords",
-       "<FORM name='TestForm' action='http://abc.com' method='post'>"
-       "  <INPUT type='password' id='pw'/>"
-       "  <INPUT type='password' id='new_pw'/>"
-       "</FORM>",
+       R"(<form name=TestForm action='http://abc.com'>
+            <input type=password id=pw>
+            <input type=password id=new_pw>
+          </form>)",
        1u, true},
   };
 
@@ -5641,10 +5588,10 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
 
 TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
   LoadHTML(
-      "<form id='form'>"
-      "  <input type='text' id='firstname' value='John'>"
-      "  <input type='text' id='lastname' value='John'>"
-      "</form>");
+      R"(<form id=form>
+           <input id=firstname value=John>
+           <input id=lastname value=John>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -5678,13 +5625,13 @@ TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
 
 TEST_F(FormAutofillTest, AriaLabelAndDescription) {
   LoadHTML(
-      "<form id='form'>"
-      "  <div id='label'>aria label</div>"
-      "  <div id='description'>aria description</div>"
-      "  <input type='text' id='field0' aria-label='inline aria label'>"
-      "  <input type='text' id='field1' aria-labelledby='label'>"
-      "  <input type='text' id='field2' aria-describedby='description'>"
-      "</form>");
+      R"(<form id=form>
+           <div id=label>aria label</div>
+           <div id=description>aria description</div>
+           <input id=field0 aria-label='inline aria label'>
+           <input id=field1 aria-labelledby='label'>
+           <input id=field2 aria-describedby='description'>
+         </form>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -5721,13 +5668,13 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription) {
 
 TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
   LoadHTML(
-      "<form id='form'>"
-      "  <input type='text' id='field0' aria-label='inline aria label'>"
-      "  <input type='text' id='field1' aria-labelledby='label'>"
-      "  <input type='text' id='field2' aria-describedby='description'>"
-      "</form>"
-      "  <div id='label'>aria label</div>"
-      "  <div id='description'>aria description</div>");
+      R"(<form id=form>
+           <input id=field0 aria-label='inline aria label'>
+           <input id=field1 aria-labelledby='label'>
+           <input id=field2 aria-describedby='description'>
+         </form>
+         <div id=label>aria label</div>
+         <div id=description>aria description</div>)");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -5762,4 +5709,5 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
   EXPECT_EQ(u"aria description", fields[2].aria_description);
 }
 
+}  // namespace
 }  // namespace autofill::form_util
