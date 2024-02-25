@@ -213,8 +213,27 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
   std::set<ContentSettingsPattern> old_origins;
   for (const base::Value& origin_val :
        *previous_result_dict.FindList(kUnusedSitePermissionsResultKey)) {
+    // Before crrev.com/c/5000387, the revoked permissions were stored in a dict
+    // that looked as follows:
+    // {
+    //    "origin": "site.com",
+    //    "permissionTypes": [...permissions],
+    //    "expiration": TimeValue
+    // }
+    // After this CL, the list was updated to a list of strings representing
+    // the origins. To maintain backwards compatibility, we should support these
+    // old values for now. This check can be deleted in the future.
+    const std::string* origin_str{};
+    if (origin_val.is_dict()) {
+      const base::Value::Dict& revoked_permission = origin_val.GetDict();
+      origin_str = revoked_permission.FindString(kSafetyHubOriginKey);
+    } else if (origin_val.is_string()) {
+      origin_str = &origin_val.GetString();
+    } else {
+      NOTREACHED();
+    }
     ContentSettingsPattern origin =
-        ContentSettingsPattern::FromString(origin_val.GetString());
+        ContentSettingsPattern::FromString(*origin_str);
     old_origins.insert(origin);
   }
 
