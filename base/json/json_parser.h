@@ -11,12 +11,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/json/json_common.h"
-#include "base/strings/string_piece.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/values.h"
 
@@ -81,7 +81,7 @@ class BASE_EXPORT JSONParser {
   // result as a Value.
   // Wrap this in base::FooValue::From() to check the Value is of type Foo and
   // convert to a FooValue at the same time.
-  std::optional<Value> Parse(StringPiece input);
+  std::optional<Value> Parse(std::string_view input);
 
   // Returns the error code.
   JsonParseError error_code() const;
@@ -115,7 +115,7 @@ class BASE_EXPORT JSONParser {
   };
 
   // A helper class used for parsing strings. One optimization performed is to
-  // create base::Value with a StringPiece to avoid unnecessary std::string
+  // create base::Value with a std::string_view to avoid unnecessary std::string
   // copies. This is not possible if the input string needs to be decoded from
   // UTF-16 to UTF-8, or if an escape sequence causes characters to be skipped.
   // This class centralizes that logic.
@@ -136,9 +136,9 @@ class BASE_EXPORT JSONParser {
     // converted, or by appending the UTF8 bytes for the code point.
     void Append(base_icu::UChar32 point);
 
-    // Converts the builder from its default StringPiece to a full std::string,
-    // performing a copy. Once a builder is converted, it cannot be made a
-    // StringPiece again.
+    // Converts the builder from its default std::string_view to a full
+    // std::string, performing a copy. Once a builder is converted, it cannot be
+    // made a std::string_view again.
     void Convert();
 
     // Returns the builder as a string, invalidating all state. This allows
@@ -160,14 +160,14 @@ class BASE_EXPORT JSONParser {
 
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain.
-  std::optional<StringPiece> PeekChars(size_t count);
+  std::optional<std::string_view> PeekChars(size_t count);
 
   // Calls PeekChars() with a |count| of 1.
   std::optional<char> PeekChar();
 
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain, and advances the parser position by |count|.
-  std::optional<StringPiece> ConsumeChars(size_t count);
+  std::optional<std::string_view> ConsumeChars(size_t count);
 
   // Calls ConsumeChars() with a |count| of 1.
   std::optional<char> ConsumeChar();
@@ -230,7 +230,7 @@ class BASE_EXPORT JSONParser {
   // consumed at the current parser position. Returns false if there are fewer
   // than |match|-length bytes or if the sequence does not match, and the
   // parser state is unchanged.
-  bool ConsumeIfMatch(StringPiece match);
+  bool ConsumeIfMatch(std::string_view match);
 
   // Sets the error information to |code| at the current column, based on
   // |index_| and |index_last_line_|, with an optional positive/negative
@@ -249,7 +249,7 @@ class BASE_EXPORT JSONParser {
   const size_t max_depth_;
 
   // The input stream being parsed. Note: Not guaranteed to NUL-terminated.
-  StringPiece input_;
+  std::string_view input_;
 
   // The index in the input stream to which the parser is wound.
   size_t index_;

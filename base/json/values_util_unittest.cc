@@ -5,9 +5,9 @@
 #include "base/json/values_util.h"
 
 #include <limits>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +19,7 @@ namespace {
 TEST(ValuesUtilTest, BasicInt64Limits) {
   constexpr struct {
     int64_t input;
-    StringPiece expected;
+    std::string_view expected;
   } kTestCases[] = {
       {0, "0"},
       {-1234, "-1234"},
@@ -71,7 +71,7 @@ TEST(ValuesUtilTest, InvalidInt64Values) {
 
 TEST(ValuesUtilTest, FilePath) {
   // Ω is U+03A9 GREEK CAPITAL LETTER OMEGA, a non-ASCII character.
-  constexpr StringPiece kTestCases[] = {
+  constexpr std::string_view kTestCases[] = {
       "/unix/Ω/path.dat",
       "C:\\windows\\Ω\\path.dat",
   };
@@ -89,7 +89,7 @@ TEST(ValuesUtilTest, UnguessableToken) {
   constexpr struct {
     uint64_t high;
     uint64_t low;
-    StringPiece expected;
+    std::string_view expected;
   } kTestCases[] = {
       {0x123456u, 0x9ABCu, "5634120000000000BC9A000000000000"},
   };

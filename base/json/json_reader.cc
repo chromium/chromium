@@ -4,7 +4,7 @@
 
 #include "base/json/json_reader.h"
 
-#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/features.h"
@@ -81,7 +81,7 @@ void DictSetValue(ContextPointer& ctx, rust::Str key, T v) {
   dict.Set(base::RustStrToStringPiece(key), base::Value(As{v}));
 }
 
-JSONReader::Result DecodeJSONInRust(const base::StringPiece& json,
+JSONReader::Result DecodeJSONInRust(std::string_view json,
                                     int options,
                                     size_t max_depth) {
   const serde_json_lenient::JsonOptions rust_options = {
@@ -116,7 +116,7 @@ JSONReader::Result DecodeJSONInRust(const base::StringPiece& json,
   auto& ctx = reinterpret_cast<ContextPointer&>(value);
   serde_json_lenient::DecodeError error;
   bool ok = serde_json_lenient::decode_json(
-      base::StringPieceToRustSlice(json), rust_options, functions, ctx, error);
+      std::string_viewToRustSlice(json), rust_options, functions, ctx, error);
 
   if (!ok) {
     return base::unexpected(base::JSONReader::Error{
@@ -134,7 +134,7 @@ JSONReader::Result DecodeJSONInRust(const base::StringPiece& json,
 #endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 
 // static
-std::optional<Value> JSONReader::Read(StringPiece json,
+std::optional<Value> JSONReader::Read(std::string_view json,
                                       int options,
                                       size_t max_depth) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
@@ -156,7 +156,7 @@ std::optional<Value> JSONReader::Read(StringPiece json,
 }
 
 // static
-std::optional<Value::Dict> JSONReader::ReadDict(StringPiece json,
+std::optional<Value::Dict> JSONReader::ReadDict(std::string_view json,
                                                 int options,
                                                 size_t max_depth) {
   std::optional<Value> value = Read(json, options, max_depth);
@@ -167,8 +167,9 @@ std::optional<Value::Dict> JSONReader::ReadDict(StringPiece json,
 }
 
 // static
-JSONReader::Result JSONReader::ReadAndReturnValueWithError(StringPiece json,
-                                                           int options) {
+JSONReader::Result JSONReader::ReadAndReturnValueWithError(
+    std::string_view json,
+    int options) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kSecurityJsonParsingTime);
   if (UsingRust()) {

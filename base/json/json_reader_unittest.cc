@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include <cmath>
-#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/rust_buildflags.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -31,13 +30,13 @@ namespace {
 
 // MSan will do a better job detecting over-read errors if the input is not
 // nul-terminated on the heap. This will copy |input| to a new buffer owned by
-// |owner|, returning a base::StringPiece to |owner|.
-base::StringPiece MakeNotNullTerminatedInput(const char* input,
-                                             std::unique_ptr<char[]>* owner) {
+// |owner|, returning a std::string_view to |owner|.
+std::string_view MakeNotNullTerminatedInput(const char* input,
+                                            std::unique_ptr<char[]>* owner) {
   size_t str_len = strlen(input);
   owner->reset(new char[str_len]);
   memcpy(owner->get(), input, str_len);
-  return base::StringPiece(owner->get(), str_len);
+  return std::string_view(owner->get(), str_len);
 }
 
 }  // namespace
@@ -988,7 +987,7 @@ TEST_P(JSONReaderTest, ParseNumberErrors) {
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
     std::unique_ptr<char[]> input_owner;
-    StringPiece input =
+    std::string_view input =
         MakeNotNullTerminatedInput(test_case.input, &input_owner);
 
     std::optional<Value> result = JSONReader::Read(input);
@@ -1029,7 +1028,8 @@ TEST_P(JSONReaderTest, UnterminatedInputs) {
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case));
 
     std::unique_ptr<char[]> input_owner;
-    StringPiece input = MakeNotNullTerminatedInput(test_case, &input_owner);
+    std::string_view input =
+        MakeNotNullTerminatedInput(test_case, &input_owner);
 
     EXPECT_FALSE(JSONReader::Read(input));
   }

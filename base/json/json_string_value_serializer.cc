@@ -4,6 +4,8 @@
 
 #include "base/json/json_string_value_serializer.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 
@@ -40,7 +42,7 @@ bool JSONStringValueSerializer::SerializeInternal(base::ValueView root,
 }
 
 JSONStringValueDeserializer::JSONStringValueDeserializer(
-    const base::StringPiece& json_string,
+    std::string_view json_string,
     int options)
     : json_string_(json_string), options_(options) {}
 
