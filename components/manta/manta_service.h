@@ -22,6 +22,7 @@ class SharedURLLoaderFactory;
 
 namespace manta {
 
+class MahiProvider;
 class OrcaProvider;
 class SnapperProvider;
 
@@ -45,6 +46,7 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   // Returns a unique pointer to an instance of the Providers for the
   // profile associated with the MantaService instance from which this method
   // is called.
+  std::unique_ptr<MahiProvider> CreateMahiProvider();
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
 

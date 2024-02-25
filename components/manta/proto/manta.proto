@@ -13,6 +13,7 @@ enum FeatureName {
   CHROMEOS_VC_BACKGROUNDS = 300;
   CHROMEOS_WALLPAPER = 301;
   TEXT_TEST = 302;
+  CHROMEOS_READER = 303;
 }
 
 enum ImageResolution {

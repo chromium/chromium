@@ -8,6 +8,8 @@ component("manta") {
   sources = [
     "features.cc",
     "features.h",
+    "mahi_provider.cc",
+    "mahi_provider.h",
     "manta_service.cc",
     "manta_service.h",
     "manta_service_callbacks.cc",

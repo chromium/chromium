@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "components/manta/mahi_provider.h"
 #include "components/manta/orca_provider.h"
 #include "components/manta/snapper_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -36,6 +37,14 @@ std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
   }
   return std::make_unique<SnapperProvider>(shared_url_loader_factory_,
                                            identity_manager_);
+}
+
+std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
+  if (!identity_manager_) {
+    return nullptr;
+  }
+  return std::make_unique<MahiProvider>(shared_url_loader_factory_,
+                                        identity_manager_);
 }
 
 void MantaService::Shutdown() {
