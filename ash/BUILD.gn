@@ -1020,6 +1020,8 @@ component("ash") {
     "picker/views/picker_view.cc",
     "picker/views/picker_view.h",
     "picker/views/picker_view_delegate.h",
+    "picker/views/picker_widget.cc",
+    "picker/views/picker_widget.h",
     "picker/views/picker_zero_state_view.cc",
     "picker/views/picker_zero_state_view.h",
     "policy/policy_recommendation_restorer.cc",

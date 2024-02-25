@@ -45,7 +45,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -58,8 +57,6 @@ constexpr SystemShadow::Type kShadowType = SystemShadow::Type::kElevation12;
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevated;
 
-// Padding to separate the Picker window from the caret.
-constexpr gfx::Outsets kPaddingAroundCaret(4);
 // Padding to separate the Picker window from the screen edge.
 constexpr gfx::Insets kPaddingFromScreenEdge(16);
 
@@ -75,34 +72,6 @@ std::unique_ptr<views::Separator> CreateSeparator() {
       .SetOrientation(views::Separator::Orientation::kHorizontal)
       .SetColorId(cros_tokens::kCrosSysSeparator)
       .Build();
-}
-
-// Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
-// at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
-// `cursor_point`, `focused_window_bounds` and returned anchor bounds should be
-// in screen coordinates.
-gfx::Rect GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
-                                const gfx::Point& cursor_point,
-                                const gfx::Rect& focused_window_bounds) {
-  if (caret_bounds != gfx::Rect() &&
-      focused_window_bounds.Contains(caret_bounds)) {
-    gfx::Rect anchor_rect = caret_bounds;
-    anchor_rect.Outset(kPaddingAroundCaret);
-    return anchor_rect;
-  } else {
-    return gfx::Rect(cursor_point, gfx::Size());
-  }
-}
-
-// Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
-PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
-  return anchor_bounds.bottom() + kPickerSize.height() <=
-                 display::Screen::GetScreen()
-                     ->GetDisplayMatching(anchor_bounds)
-                     .work_area()
-                     .bottom()
-             ? PickerView::PickerLayoutType::kResultsBelowSearchField
-             : PickerView::PickerLayoutType::kResultsAboveSearchField;
 }
 
 // Gets the preferred Picker view bounds in screen coordinates. We try to place
@@ -194,39 +163,6 @@ PickerView::PickerView(PickerViewDelegate* delegate,
 }
 
 PickerView::~PickerView() = default;
-
-views::UniqueWidgetPtr PickerView::CreateWidget(
-    const gfx::Rect& caret_bounds,
-    const gfx::Point& cursor_point,
-    const gfx::Rect& focused_window_bounds,
-    PickerViewDelegate* delegate,
-    const base::TimeTicks trigger_event_timestamp) {
-  // Create the Picker view and set its size. This will trigger a layout, so
-  // that the position of the Picker view's search field can be used when
-  // setting the Picker widget bounds below.
-  const gfx::Rect anchor_bounds =
-      GetPickerAnchorBounds(caret_bounds, cursor_point, focused_window_bounds);
-  const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
-  auto picker_view = std::make_unique<PickerView>(
-      delegate, trigger_event_timestamp, layout_type);
-  picker_view->SetSize(kPickerSize);
-
-  views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.type = views::Widget::InitParams::TYPE_BUBBLE;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.bounds = picker_view->GetTargetBounds(anchor_bounds, layout_type);
-  // TODO(b/309706053): Replace this with the finalized string.
-  params.name = "Picker";
-  params.delegate = picker_view.release();
-
-  auto widget = std::make_unique<views::Widget>(std::move(params));
-  widget->SetVisibilityAnimationTransition(
-      views::Widget::VisibilityTransition::ANIMATE_HIDE);
-  return widget;
-}
 
 bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);

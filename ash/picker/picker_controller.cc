@@ -22,6 +22,7 @@
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/picker/views/picker_widget.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -204,9 +205,9 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(GetCaretBounds(), GetCursorPoint(),
-                                       GetFocusedWindowBounds(), this,
-                                       trigger_event_timestamp);
+    widget_ = PickerWidget::Create(GetCaretBounds(), GetCursorPoint(),
+                                   GetFocusedWindowBounds(), this,
+                                   trigger_event_timestamp);
     widget_->Show();
 
     feature_usage_metrics_.StartUsage();

@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -56,19 +55,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
   ~PickerView() override;
-
-  // `trigger_event_timestamp` is the timestamp of the event that triggered the
-  // Widget to be created. For example, if the feature was triggered by a mouse
-  // click, then it should be the timestamp of the click. By default, the
-  // timestamp is the time this function is called.
-  // `delegate` must remain valid for the lifetime of the created Widget.
-  // `caret_bounds` and `cursor_point` should be in screen coordinates.
-  static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& caret_bounds,
-      const gfx::Point& cursor_point,
-      const gfx::Rect& focused_window_bounds,
-      PickerViewDelegate* delegate,
-      base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
